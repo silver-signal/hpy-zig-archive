@@ -7,10 +7,10 @@ This extension provides a build system for writing Python extensions in Zig.
 
 
 ### Why write extensions in Zig?
-
+TODO
 
 ### Can I convert an existing C-Extension to Zig?
-
+TODO
 
 ### HPy support
 pyzig supports using all 3 ABI modes of the HPy interface. Just specify which ABI your extension uses.
@@ -20,7 +20,9 @@ pyzig uses, but does not rely on, setuptools for building extensions. If your ex
 
 
 ### Contributing
-
+TODO
 
 ### License
+TODO
+
 
