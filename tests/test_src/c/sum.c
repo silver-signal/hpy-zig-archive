@@ -23,3 +23,7 @@ static struct PyModuleDef zigmodule = {
     methods
 };
 
+PyMODINIT_FUNC PyInit_c_sum(void) {
+    return PyModule_Create(&zigmodule);
+}
+
