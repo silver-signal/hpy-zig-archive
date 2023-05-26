@@ -6,14 +6,11 @@ from subprocess import run
 from pathlib import Path
 
 from distutils.dist import Distribution
-from setuptools.command.build_ext import build_ext as SetupToolsBuildExt
+from setuptools.command.build_ext import build_ext
+from setuptools import Command
 
 
-class ZigCompilerError(Exception):
-    """Some compile/link operation failed."""
-
-
-class BuildExt(SetupToolsBuildExt):
+class BuildExt(build_ext):
     def __init__(self, dist, zig_value):
         self._zig_value = zig_value
         super().__init__(dist)
@@ -28,7 +25,7 @@ class BuildExt(SetupToolsBuildExt):
         output = Path(self.get_ext_filename(ext.name))
         target = Path(self.get_ext_fullpath(ext.name))
 
-        zig = os.environ.get('PY_ZIG', 'zig')  # override zig in path with specific version
+        zig = os.environ.get('PYZIG', 'zig')  # override zig in path with specific version
         bld_cmd = [zig, 'build-lib', '-dynamic', '-DPYHEXVER={}'.format(sys.hexversion), '--name', output.stem]
         for inc_dir in self.compiler.include_dirs:
             bld_cmd.extend(('-I', inc_dir))
@@ -62,3 +59,9 @@ def setup_build_zig(dist, keyword, value):
     assert keyword == 'build_zig'
     be = dist.cmdclass.get('build_ext')
     dist.cmdclass['build_ext'] = ZigBuildExtension(value)
+
+
+class ZigCompilerError(Exception):
+    """A Zig compile or link operation failed."""
+
+

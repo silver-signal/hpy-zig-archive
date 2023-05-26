@@ -22,6 +22,9 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: Implementation :: CPython',
 ]
+dependencies = [
+  "setuptools",
+]
 
 
 [project.urls]
@@ -29,7 +32,6 @@ classifiers = [
 "Bug Tracker" = "https://github.com/f-cozzocrea/pyzig/issues"
 
 
-##[options.entry_points]
-##distutils.setup_keywords =
-##  build_zig = setuptools_zig.setup_build_zig
+[project.entry-points."distutils.setup_keywords"]
+build_zig = "pyzig:setup_build_zig"
 
