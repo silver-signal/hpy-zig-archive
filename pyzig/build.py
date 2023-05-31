@@ -19,13 +19,14 @@ def build(
 
     pyinclude = Path(get_path("include"))
     python_header_dirs = [str(p) for p in pyinclude.iterdir() if p.is_dir()]
-    
-    ccompiler_include_paths = ["/usr/lib/gcc/x86_64-linux-gnu/12/include"]
-    unix_include_paths = ["/usr/include", "/usr/include/x86_64-linux-gnu", "/usr/local/include",]
+   
+    # FIXME: Need to automate getting clang's include paths
+    clang_include_paths = [] # ["/usr/lib/llvm-14/lib/clang/14.0.0/include"]
+    unix_include_paths = [] # ["/usr/include", "/usr/include/x86_64-linux-gnu", "/usr/local/include",]
     include_paths = [get_path("include"), get_path("platinclude"),]
-    include_paths.extend(unix_include_paths)
-    include_paths.extend(ccompiler_include_paths)
     include_paths.extend(python_header_dirs)
+    include_paths.extend(unix_include_paths)
+    include_paths.extend(clang_include_paths)
     if include_dirs is not None:
         for dir in include_dirs:
             include_paths.append(str(dir))
@@ -75,10 +76,13 @@ if __name__ == "__main__":
     python_name = f"python{get_python_version()}" 
     pythonh_source = f"{get_path('include')}/Python.h"
     build(zig_file_name=python_name, source=pythonh_source, py_limited_api=True)
-    
+    build(zig_file_name='sum', source='./sum.c', py_limited_api=True)
+
+    hpy_define_macros = ["HPY_ABI_UNIVERSAL"]
+
     hpy_devel = files(hpy.devel.include)
     with as_file(hpy_devel) as hpy:
         hpy_header = hpy / 'hpy.h'
-        build(zig_file_name='hpy_universal', source=hpy_header, define_macros="HPY_ABI_UNIVERSAL", include_dirs=hpy)
-        
+        build(zig_file_name='hpy_universal', source=hpy_header, define_macros=hpy_define_macros, include_dirs=[hpy])
+        build(zig_file_name='hpy_quickstart', source='./quickstart.c', define_macros=hpy_define_macros, include_dirs=[hpy])        
 
