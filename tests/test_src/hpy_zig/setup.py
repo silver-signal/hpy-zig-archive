@@ -11,16 +11,8 @@ DIR = os.path.dirname(__file__)
 setup(
     name="hpy-quickstart",
     hpy_ext_modules=[
-        Extension('quickstart', sources=[os.path.join(DIR, 'quickstart.c')]),
+        Extension('quickstart', sources=[os.path.join(DIR, 'src/quickstart.c')]),
     ],
     setup_requires=['hpy'],
-    )
-
-"""
-setup(
-    name='hpy_zig_ext_test',
-    version='0.0.0',
-    ext_modules=[Extension('hpy_zig_ext_test.sum', ['sum.c' ])],
-    setup_requires=['hpy'],
 )
-"""
+

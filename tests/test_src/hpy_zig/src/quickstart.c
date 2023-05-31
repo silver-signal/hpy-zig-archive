@@ -136,11 +136,13 @@ static HPy say_hello_impl(HPyContext *ctx, HPy self)
     return HPyUnicode_FromString(ctx, "Hello world");
 }
 
+// Is this important? Can we just ask for a tuple of function pointers?
 static HPyDef *QuickstartMethods[] = {
     &say_hello, // 'say_hello' generated for us by the HPyDef_METH macro
     NULL,
 };
 
+// This should stay. This gives the user the ability to define aspects of the module.
 static HPyModuleDef quickstart_def = {
     .doc = "HPy Quickstart Example",
     .defines = QuickstartMethods,
@@ -177,6 +179,8 @@ static HPyModuleDef quickstart_def = {
 
 // unrolled twice:
 
+// NOTE: This is specifically for the universal/hybrid ABI. cpython ABI is smaller
+
 HPy_EXPORTED_SYMBOL uint32_t  // HPy_EXPORTED_SYMBOL used for __declspec or __attribute__ calls
 get_required_hpy_major_version_quickstart()
 {
@@ -199,6 +203,26 @@ HPyInit_quickstart()
   return &quickstart_def;
 }
 
+// Need to get these:
+//    HPy_ABI_VERSION (macro or alternate?)
+//    HPy_ABI_VERSION_MINOR (macro or alternate?)
+//    HPyModuleDef*
+//    HPyContext
+//
+// Zig User API:
+// -------------------------------------------------------------------------------------------------
+//
+// HPy_MODINIT("my_module", quickstart_def);
+//    
+// -------------------------------------------------------------------------------------------------
+//
+// Implementation:
+//
+// HPy_MODINIT(modulename: []const u8, module_def: HPyDef)
+//    @export get_required_hpy_major_version_{modulename} (function u32)
+//    @export get_required_hpy_minor_version_{modulename} (function u32)
+//    @export HPyInitGlobalContext_{modulename}           (function void)
+//    @export HPyInit_{modulename}                        (function HPyModuleDef*)
 //
 
 
