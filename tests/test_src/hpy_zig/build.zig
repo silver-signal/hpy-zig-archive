@@ -19,10 +19,31 @@ pub fn build(b: *std.Build) void {
         .name = "hpy_zig",
         // In this case the main source file is merely a path, however, in more
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = .{ .path = "src/pyzig.zig" },
         .target = target,
         .optimize = optimize,
     });
+
+    lib.addIncludePath("hpy_include");
+    lib.addIncludePath("hpy_include/hpy/forbid_python_h/");
+
+    lib.addCSourceFile("src/hpy.c", &[_][]const u8{
+        "-Wno-unused-result",
+        "-Wsign-compare",
+        "-g",
+        "-fstack-protector-strong",
+        "-Wformat",
+        "-Werror=format-security",
+        "-DNDEBUG",
+        "-g",
+        "-fwrapv",
+        "-O2",
+        "-Wall",
+        "-DHPY",
+        "-DHPY_ABI_UNIVERSAL",
+    });
+
+    lib.linkSystemLibrary("c");
 
     // This declares intent for the library to be installed into the standard
     // location when the user invokes the "install" step (the default step when
