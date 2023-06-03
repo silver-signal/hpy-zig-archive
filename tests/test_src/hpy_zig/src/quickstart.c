@@ -133,7 +133,7 @@ static HPy say_hello_impl(HPyContext *ctx, HPy self)
     // if (self == self)
     //      HPyUnicode_FromString(ctx, "Surprise? Try HPy_Is(ctx, self, self)");
 
-    return HPyUnicode_FromString(ctx, "Hello world");
+    return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
 // Is this important? Can we just ask for a tuple of function pointers?
