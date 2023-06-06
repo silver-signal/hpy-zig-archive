@@ -25,11 +25,13 @@ setup(
     name="hpy-quickstart",
     hpy_ext_modules=[
         Extension(
-            name='quickstart', 
+            name='quickstart_c', 
             sources=[os.path.join(DIR, 'src/quickstart.c')],
-            extra_compile_args=EXTRA_COMPILE_ARGS,
-            extra_link_args=EXTRA_LINK_ARGS,
         ),
+        #Extension(
+        #    name='quickstart_zig',
+        #    sources=[os.path.join(DIR, 'src/quickstart.zig')],
+        #),
     ],
     setup_requires=['hpy'],
     zip_safe=False,

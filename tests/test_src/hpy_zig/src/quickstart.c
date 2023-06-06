@@ -1,5 +1,3 @@
-// quickstart.c
-
 // This header file is the entrypoint to the HPy API:
 //#define HPY_ABI_UNIVERSAL
 #include "hpy.h"
@@ -137,44 +135,44 @@ static HPy say_hello_impl(HPyContext *ctx, HPy self)
 }
 
 // Is this important? Can we just ask for a tuple of function pointers?
-static HPyDef *QuickstartMethods[] = {
+static HPyDef *QuickstartCMethods[] = {
     &say_hello, // 'say_hello' generated for us by the HPyDef_METH macro
     NULL,
 };
 
 // This should stay. This gives the user the ability to define aspects of the module.
-static HPyModuleDef quickstart_def = {
-    .doc = "HPy Quickstart Example",
-    .defines = QuickstartMethods,
+static HPyModuleDef quickstart_c_def = {
+    .doc = "HPy Quickstart C Example",
+    .defines = QuickstartCMethods,
 };
 
 // The Python interpreter will create the module for us from the
 // HPyModuleDef specification. Additional initialization can be
 // done in the HPy_mod_execute slot
-//HPy_MODINIT(quickstart, quickstart_def)
+//HPy_MODINIT(quickstart_c, quickstart_c_def)
 
 // unrolled once:
 
 //HPy_EXPORTED_FUNC uint32_t // HPy_EXPORTED_FUNC is only used for C++ compilers. Not needed for Zig.
-//get_required_hpy_major_version_quickstart()
+//get_required_hpy_major_version_quickstart_c()
 //{
 //  return HPY_ABI_VERSION;
 //}
 //HPy_EXPORTED_FUNC uint32_t
-//get_required_hpy_minor_version_quickstart()
+//get_required_hpy_minor_version_quickstart_c()
 //{
 //  return HPY_ABI_VERSION_MINOR;
 //}
 //_HPy_CTX_MODIFIER HPyContext *_ctx_for_trampolines; // _HPy_CTX_MODIFIER declares an attribute for the compiler
 //HPy_EXPORTED_FUNC void
-//HPyInitGlobalContext_quickstart(HPyContext *ctx)
+//HPyInitGlobalContext_quickstart_c(HPyContext *ctx)
 //{
 //  _ctx_for_trampolines = ctx;
 //}
 //HPy_EXPORTED_FUNC HPyModuleDef*
-//HPyInit_quickstart()
+//HPyInit_quickstart_c()
 //{
-//  return &quickstart_def;
+//  return &quickstart_c_def;
 //}
 
 // unrolled twice:
@@ -182,25 +180,25 @@ static HPyModuleDef quickstart_def = {
 // NOTE: This is specifically for the universal/hybrid ABI. cpython ABI is smaller
 
 HPy_EXPORTED_SYMBOL uint32_t  // HPy_EXPORTED_SYMBOL used for __declspec or __attribute__ calls
-get_required_hpy_major_version_quickstart()
+get_required_hpy_major_version_quickstart_c()
 {
   return HPY_ABI_VERSION; // HPY_ABI_VERSION should be dynamically set from HPy package version
 }
 HPy_EXPORTED_SYMBOL uint32_t
-get_required_hpy_minor_version_quickstart()
+get_required_hpy_minor_version_quickstart_c()
 {
   return HPY_ABI_VERSION_MINOR; // HPY_ABI_VERSION_MINOR should be dynamically set from HPy package version
 }
 _HPy_HIDDEN HPyContext *_ctx_for_trampolines; // _HPy_HIDDEN declares the hidden __attribute__
 HPy_EXPORTED_SYMBOL void
-HPyInitGlobalContext_quickstart(HPyContext *ctx)
+HPyInitGlobalContext_quickstart_c(HPyContext *ctx)
 {
   _ctx_for_trampolines = ctx;
 }
 HPy_EXPORTED_SYMBOL HPyModuleDef*
-HPyInit_quickstart()
+HPyInit_quickstart_c()
 {
-  return &quickstart_def;
+  return &quickstart_c_def;
 }
 
 // Need to get these:
@@ -212,7 +210,7 @@ HPyInit_quickstart()
 // Zig User API:
 // -------------------------------------------------------------------------------------------------
 //
-// HPy_MODINIT("my_module", quickstart_def);
+// HPy_MODINIT("my_module", quickstart_c_def);
 //    
 // -------------------------------------------------------------------------------------------------
 //
