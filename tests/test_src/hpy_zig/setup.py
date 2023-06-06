@@ -1,13 +1,14 @@
 import os
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
-import sysconfig
 
 EXTRA_COMPILE_ARGS = ["-Wsign-compare", "-DNDEBUG", "-g", "-fwrapv", "-O2", "-Wall", "-g", "-fstack-protector-strong", "-Wformat", "-Werror=format-security",  "-g", "-fwrapv", "-O2",]
-EXTRA_LINK_ARGS = ["-g", "-fwrapv", "-O2",]
+EXTRA_LINK_ARGS = ["-g", "-fwrapv", "-O2", "-Bsymbolic-functions",]
 
-print(f"{EXTRA_COMPILE_ARGS=}")
-print(f"{EXTRA_LINK_ARGS=}")
+os.environ["CC"] = 'zig cc'
+os.environ["CPP"] = 'zig c++'
+os.environ["CXX"] = 'zig c++'
+os.environ["LDSHARED"] = 'zig cc -shared'
 
 class custom_build_ext(build_ext):
     def build_extensions(self):
@@ -17,7 +18,6 @@ class custom_build_ext(build_ext):
         self.compiler.set_executable("linker_so", ["zig", "cc", "-shared"])
         self.compiler.set_executable("linker_exe", ["zig", "cc"])
         self.compiler.set_executable("archiver", ["zig", "ar", "-cr"])
-        self.compiler.set_executable("ranlib", None)
         build_ext.build_extensions(self)
 
 DIR = os.path.dirname(__file__)
@@ -33,6 +33,12 @@ setup(
     ],
     setup_requires=['hpy'],
     zip_safe=False,
-    cmdclass={"build_ext": custom_build_ext},
 )
+
+os.environ.pop("CC")
+os.environ.pop("CPP")
+os.environ.pop("CXX")
+os.environ.pop("LDSHARED")
+
+
 
