@@ -1,26 +1,22 @@
 import os
+import logging
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
-
-EXTRA_COMPILE_ARGS = ["-Wsign-compare", "-DNDEBUG", "-g", "-fwrapv", "-O2", "-Wall", "-g", "-fstack-protector-strong", "-Wformat", "-Werror=format-security",  "-g", "-fwrapv", "-O2",]
-EXTRA_LINK_ARGS = ["-g", "-fwrapv", "-O2", "-Bsymbolic-functions",]
+from setuptools._distutils.ccompiler import CCompiler
 
 os.environ["CC"] = 'zig cc'
 os.environ["CPP"] = 'zig c++'
 os.environ["CXX"] = 'zig c++'
 os.environ["LDSHARED"] = 'zig cc -shared'
 
-class custom_build_ext(build_ext):
-    def build_extensions(self):
-        self.compiler.set_executable("compiler", ["zig", "cc"])
-        self.compiler.set_executable("compiler_so", ["zig", "cc"])
-        self.compiler.set_executable("compiler_cxx", ["zig", "cc"])
-        self.compiler.set_executable("linker_so", ["zig", "cc", "-shared"])
-        self.compiler.set_executable("linker_exe", ["zig", "cc"])
-        self.compiler.set_executable("archiver", ["zig", "ar", "-cr"])
-        build_ext.build_extensions(self)
+class build_zig_ext(build_ext):
+    ...
+
+logging.basicConfig(level=logging.INFO)
+
 
 DIR = os.path.dirname(__file__)
+
 setup(
     name="hpy-quickstart",
     hpy_ext_modules=[
@@ -28,10 +24,10 @@ setup(
             name='quickstart_c', 
             sources=[os.path.join(DIR, 'src/quickstart.c')],
         ),
-        #Extension(
-        #    name='quickstart_zig',
-        #    sources=[os.path.join(DIR, 'src/quickstart.zig')],
-        #),
+        Extension(
+            name='quickstart_zig',
+            sources=[os.path.join(DIR, 'src/quickstart.zig')],
+        ),
     ],
     setup_requires=['hpy'],
     zip_safe=False,
