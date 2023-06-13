@@ -49,10 +49,10 @@ export fn say_hello_trampoline(self: ?*cpy_PyObject) ?*cpy_PyObject {
 }
 
 pub const HPyDef_Kind = enum(c_uint) {
-    HPyDef_Kind_Slot = 1,
-    HPyDef_Kind_Meth = 2,
-    HPyDef_Kind_Member = 3,
-    HPyDef_Kind_GetSet = 4,
+    Slot = 1,
+    Meth = 2,
+    Member = 3,
+    GetSet = 4,
 };
 
 const HPyDef_Val = extern union {
@@ -68,7 +68,7 @@ pub const HPyDef = extern struct {
 };
 
 pub export var say_hello: HPyDef = HPyDef{
-    .kind = @bitCast(c_uint, HPyDef_Kind_Meth),
+    .kind = HPyDef_Kind.Meth,
     .val = HPyDef_Val{
         .meth = HPyMeth{
             .name = "say_hello",
