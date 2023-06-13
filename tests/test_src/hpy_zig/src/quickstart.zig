@@ -9,8 +9,16 @@ const testing = std.testing;
 
 const hpy = @import("hpy_universal.zig");
 const HPy = hpy.HPy;
-const HPyDef = hpy.HPyDef;
+//const HPyDef = hpy.HPyDef;
+const HPyMeth = hpy.HPyMeth;
+const HPySlot = hpy.HPySlot;
+const HPyMember = hpy.HPyMember;
+const HPyGetSet = hpy.HPyGetSet;
+const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
+//const union_unnamed_2 = hpy.union_unnamed_2;
 const cpy_PyObject = hpy.cpy_PyObject;
+const cpy_PyCFunction = hpy.cpy_PyCFunction;
+const HPyCFunction = hpy.HPyCFunction;
 const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
 const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
@@ -21,25 +29,69 @@ const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
 const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
 
+extern var _ctx_for_trampolines: [*c]HPyContext;
+
 //const say_hello = undefined; //HPyDef_METH("say_hello", HPyFunc_NOARGS);
-fn say_hello_impl(ctx: *HPyContext, self: HPy) HPy {
+pub const say_hello_impl_sig = HPyFunc_NOARGS;
+export fn say_hello_impl(ctx: *HPyContext, self: HPy) HPy {
     _ = self;
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
-//const QuickstartMethods = [_]*HPyDef{
-//    &say_hello,
-//    null,
-//};
-//
-//const quickstart_def = HPyModuleDef{
-//    .doc = "HPy Quickstart Example",
-//    .defines = QuickstartMethods,
-//};
-//
-//comptime {
-//    HPy_MODINIT("quickstart", quickstart_def);
-//}
+pub const say_hello_trampoline_sig = HPyFunc_NOARGS;
+export fn say_hello_trampoline(self: ?*cpy_PyObject) ?*cpy_PyObject {
+    var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
+        .self = self,
+        .result = null,
+    };
+    _HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines, @bitCast(c_uint, HPyFunc_NOARGS), @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)), @ptrCast(?*anyopaque, &a));
+    return a.result;
+}
+
+pub const HPyDef_Kind = enum(c_uint) {
+    HPyDef_Kind_Slot = 1,
+    HPyDef_Kind_Meth = 2,
+    HPyDef_Kind_Member = 3,
+    HPyDef_Kind_GetSet = 4,
+};
+
+const HPyDef_Val = extern union {
+    slot: HPySlot,
+    meth: HPyMeth,
+    member: HPyMember,
+    getset: HPyGetSet,
+};
+
+pub const HPyDef = extern struct {
+    kind: HPyDef_Kind,
+    val: HPyDef_Val,
+};
+
+pub export var say_hello: HPyDef = HPyDef{
+    .kind = @bitCast(c_uint, HPyDef_Kind_Meth),
+    .val = HPyDef_Val{
+        .meth = HPyMeth{
+            .name = "say_hello",
+            .impl = @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)),
+            .cpy_trampoline = @ptrCast(cpy_PyCFunction, @alignCast(@import("std").meta.alignment(cpy_PyCFunction), &say_hello_trampoline)),
+            .signature = @bitCast(c_uint, HPyFunc_NOARGS),
+            .doc = null,
+        },
+    },
+};
+
+pub const QuickstartMethods: [2]*HPyDef = [2]*HPyDef{
+    &say_hello,
+    null,
+};
+
+const quickstart_def: HPyModuleDef = HPyModuleDef{
+    .doc = "HPy Quickstart Example",
+    .size = 0,
+    .legacy_methods = null,
+    .defines = @ptrCast([*c][*c]HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]HPyDef), &QuickstartMethods)),
+    .globals = null,
+};
 
 //var ctx_for_trampolines: *HPyContext = undefined;
 //
@@ -83,6 +135,13 @@ pub inline fn HPy_MODINIT(ext_name: []const u8, mod_def: HPyModuleDef) void {
         .name = initContextFuncName,
         .linkage = .Strong,
     });
+
+    const HPyInitModule = makeHPyInit(mod_def);
+    const HPyInitModuleFuncName = "HPyInit_" ++ ext_name;
+    @export(HPyInitModule, .{
+        .name = HPyInitModuleFuncName,
+        .linkage = .Strong,
+    });
 }
 
 /// Return a function which returns the required HPy version
@@ -97,10 +156,9 @@ fn makeGetRequiredHPyVersion(comptime hpy_version: u32) fn () u32 {
 
 /// Create a function which allows HPy to set the global context
 fn makeHPyInitGlobalContext() fn () void {
-    // FIXME:
     const S = struct {
         fn HPyInitGlobalContext(ctx: *HPyContext) void {
-            std.debug.print("{s}\n", .{@typeName(ctx)});
+            _ctx_for_trampolines = ctx;
         }
     };
     return S.HPyInitGlobalContext;

@@ -2,7 +2,6 @@ import os
 import logging
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
-from setuptools._distutils.ccompiler import CCompiler
 
 os.environ["CC"] = 'zig cc'
 os.environ["CPP"] = 'zig c++'
