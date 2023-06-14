@@ -1,41 +1,23 @@
-import os
-import logging
 from setuptools import Extension, setup
-from setuptools.command.build_ext import build_ext
 
-os.environ["CC"] = 'zig cc'
-os.environ["CPP"] = 'zig c++'
-os.environ["CXX"] = 'zig c++'
-os.environ["LDSHARED"] = 'zig cc -shared'
-
-class build_zig_ext(build_ext):
-    ...
-
-logging.basicConfig(level=logging.INFO)
-
-
-DIR = os.path.dirname(__file__)
+from setuptools_ziglang.build_zig_ext import BuildZigExt
 
 setup(
     name="hpy-quickstart",
     hpy_ext_modules=[
         Extension(
             name='quickstart_c', 
-            sources=[os.path.join(DIR, 'src/quickstart.c')],
+            sources=['src/quickstart.c'],
+            py_limited_api=True,
         ),
         Extension(
             name='quickstart_zig',
-            sources=[os.path.join(DIR, 'src/quickstart.zig')],
+            sources=['src/quickstart.zig'],
+            py_limited_api=True,
         ),
     ],
-    setup_requires=['hpy'],
+    cmdclass={'build_ext': BuildZigExt},
+    setup_requires=['ziglang', 'setuptools-ziglang' ,'hpy'],
     zip_safe=False,
 )
-
-os.environ.pop("CC")
-os.environ.pop("CPP")
-os.environ.pop("CXX")
-os.environ.pop("LDSHARED")
-
-
 
