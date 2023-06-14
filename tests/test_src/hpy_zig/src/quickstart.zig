@@ -93,8 +93,6 @@ const quickstart_def: HPyModuleDef = HPyModuleDef{
     .globals = null,
 };
 
-//var ctx_for_trampolines: *HPyContext = undefined;
-//
 //fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
 //    std.debug.print("{s}\n", .{meth_name});
 //    std.debug.print("{d}\n", .{meth_sig});
