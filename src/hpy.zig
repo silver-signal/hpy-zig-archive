@@ -8,7 +8,18 @@ const hpy = @cImport({
 
 pub const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 pub const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
+
+const HPySlot = hpy.HPySlot;
+const HPyMeth = hpy.HPyMeth;
+const HPyMember = hpy.HPyMember;
+const HPyGetSet = hpy.HPyGetSet;
 const HPyDef = hpy.HPyDef;
+const HPyDef_Kind = hpy.HPyDef_Kind;
+const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
+const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
+const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
+const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
+
 const HPyContext = hpy.HPyContext;
 const HPyModuleDef = hpy.HPyModuleDef;
 const cpy_PyObject = hpy.cpy_PyObject;
@@ -29,25 +40,46 @@ pub fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
 // Is this necessary?
 
 /// Creates the module trampline function
-//fn makeMethodTrampoline() fn () *cpy_PyObject {
-//    const S = struct {
-//        fn methodTrampoline(self: *cpy_PyObject) *cpy_PyObject {
-//            //var a: _HPyFunc_args_NOARGS a = {self};
-//            //_HPy_CallRealFunctionFromTrampoline();
-//            return self;
-//        }
-//    };
-//    return S.methodTrampoline;
-//}
-//
-//fn makeHPyDef(name: []const u8, kind: HPyDef_Kind) HPyDef {
-//    std.debug.print("{s}\n", .{name});
-//    _ = kind;
-//    var newHPyDef = HPydef{
-//        .kind = kind,
-//    };
-//    return newHPyDef;
-//}
+fn makeMethodTrampoline() fn () *cpy_PyObject {
+    const S = struct {
+        fn methodTrampoline(self: *cpy_PyObject) *cpy_PyObject {
+            //var a: _HPyFunc_args_NOARGS a = {self};
+            //_HPy_CallRealFunctionFromTrampoline();
+            return self;
+        }
+    };
+    return S.methodTrampoline;
+}
+
+/// Creates an HPyDef struct with a custom name and kind
+fn makeHPyDef(name: []const u8, kind: HPyDef_Kind) HPyDef {
+    std.debug.print("{s}\n", .{name});
+    var newHPyDef = HPyDef{
+        .kind = kind,
+    };
+    return newHPyDef;
+}
+
+const HPyDef_Union = union {
+    slot: HPySlot,
+    meth: HPyMeth,
+    member: HPyMember,
+    getset: HPyGetSet,
+};
+
+/// Return a HPyDef type (Slot, Meth, Member, or GetSet) based on parameters:
+//fn makeHPyDef_Kind(kind: HPyDef_Kind)
+
+// TODO
+//fn makeHPySlot()
+
+//fn makeHPyMeth()
+
+// TODO
+//fn makeHPyMember()
+
+// TODO
+//fn makeHPyGetSet()
 
 pub inline fn HPy_MODINIT(ext_name: []const u8, mod_def: HPyModuleDef) void {
     comptime {
