@@ -11,6 +11,11 @@ setup(
             py_limited_api=True,
         ),
         Extension(
+            name='quickstart_c_zig',
+            sources=['src/quickstart_c.zig'],
+            py_limited_api=True,
+        ),
+        Extension(
             name='quickstart_zig',
             sources=['src/quickstart.zig'],
             py_limited_api=True,
