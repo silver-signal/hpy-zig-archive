@@ -73,16 +73,9 @@ def build(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
-    python_name = f"python{get_python_version()}" 
-    pythonh_source = f"{get_path('include')}/Python.h"
-    build(zig_file_name=python_name, source=pythonh_source, py_limited_api=True)
-    build(zig_file_name='sum', source='./sum.c', py_limited_api=True)
-
     hpy_define_macros = ["HPY_ABI_UNIVERSAL"]
-
     hpy_devel = files(hpy.devel.include)
     with as_file(hpy_devel) as hpy:
         hpy_header = hpy / 'hpy.h'
         build(zig_file_name='hpy_universal', source=hpy_header, define_macros=hpy_define_macros, include_dirs=[hpy])
-        build(zig_file_name='hpy_quickstart', source='./quickstart.c', define_macros=hpy_define_macros, include_dirs=[hpy])        
 
