@@ -73,7 +73,16 @@ const HPyDef_Union = union {
 // TODO
 //fn makeHPySlot()
 
-//fn makeHPyMeth()
+// FIXME: How does one pass a function ptr which could take any params,
+//      and return any type? That /should/ be the type of impl and trampoline.
+//fn makeHPyMeth(name: []const u8, impl: anytype, trampoline: anytype) {
+//    var newHPyMeth = HPyMeth{
+//        .name = name,
+//        .impl = impl,
+//        .signature =
+//    };
+//    return newHPyMeth;
+//}
 
 // TODO
 //fn makeHPyMember()
