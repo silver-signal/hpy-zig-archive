@@ -1,10 +1,6 @@
 const std = @import("std");
 
-const hpy = @cImport({
-    @cDefine("HPY", {});
-    @cDefine("HPY_ABI_UNIVERSAL", {});
-    @cInclude("hpy.h");
-});
+const hpy = @import("hpy.zig");
 
 const HPy = hpy.HPy;
 
@@ -20,6 +16,11 @@ const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
 const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
 const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
+
+const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
+const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
+
+const HPy_MODINIT = hpy.HPy_MODINIT;
 
 var _ctx_for_trampolines: *HPyContext = undefined;
 
@@ -44,7 +45,7 @@ pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObjec
 }
 pub export var say_hello: HPyDef = HPyDef{
     .kind = @bitCast(c_uint, HPyDef_Kind_Meth),
-    .unnamed_0 = .{
+    .unnamed_0 = .{ // FIXME
         .meth = HPyMeth{
             .name = "say_hello",
             .impl = @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)),
@@ -54,27 +55,31 @@ pub export var say_hello: HPyDef = HPyDef{
         },
     },
 };
-pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
+
+var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
     &say_hello,
     null,
 };
-pub var quickstart_c_def: HPyModuleDef = HPyModuleDef{
+var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
     .size = 0,
     .legacy_methods = null,
     .defines = @ptrCast([*c][*c]HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]HPyDef), &QuickstartCMethods)),
     .globals = null,
 };
-pub export fn get_required_hpy_major_version_quickstart_c() u32 {
-    return 0;
+
+const ModuleContext = HPy_MODINIT("quickstart_zig", quickstart_zig_def);
+const _ = ModuleContext;
+//pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
+//    return HPY_ABI_VERSION;
+//}
+//pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
+//    return HPY_ABI_VERSION_MINOR;
+//}
+pub export fn HPyInit_quickstart_zig() [*c]HPyModuleDef {
+    return &quickstart_zig_def;
 }
-pub export fn get_required_hpy_minor_version_quickstart_c() u32 {
-    return 0;
-}
-pub export fn HPyInitGlobalContext_quickstart_c(arg_ctx: [*c]HPyContext) void {
+pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: [*c]HPyContext) void {
     var ctx = arg_ctx;
     _ctx_for_trampolines = ctx;
-}
-pub export fn HPyInit_quickstart_c() [*c]HPyModuleDef {
-    return &quickstart_c_def;
 }

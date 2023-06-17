@@ -1246,7 +1246,7 @@ pub const HPyType_SpecParam = extern struct {
     kind: HPyType_SpecParam_Kind,
     object: HPy,
 };
-pub var _ctx_for_trampolines: [*c]HPyContext = undefined;
+pub extern var _ctx_for_trampolines: [*c]HPyContext;
 pub const HPyModuleDef = extern struct {
     doc: [*c]const u8,
     size: HPy_ssize_t,
@@ -2609,29 +2609,29 @@ pub export var say_hello: HPyDef = HPyDef{
         },
     },
 };
-pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
+pub var QuickstartCMethods: [2][*c]const HPyDef = [2][*c]const HPyDef{
     &say_hello,
     null,
 };
-pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
+pub const quickstart_c_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
     .size = @import("std").mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
-    .defines = @ptrCast([*c][*c]HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]HPyDef), &QuickstartCMethods)),
+    .defines = @ptrCast([*c][*c]const HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]const HPyDef), &QuickstartCMethods)),
     .globals = null,
 };
-pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
+pub export fn get_required_hpy_major_version_quickstart_c() u32 {
     return 0;
 }
-pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
+pub export fn get_required_hpy_minor_version_quickstart_c() u32 {
     return 0;
 }
-pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: [*c]HPyContext) void {
+pub export fn HPyInitGlobalContext_quickstart_c(arg_ctx: [*c]HPyContext) void {
     var ctx = arg_ctx;
     _ctx_for_trampolines = ctx;
 }
-pub export fn HPyInit_quickstart_zig() [*c]HPyModuleDef {
-    return &quickstart_zig_def;
+pub export fn HPyInit_quickstart_c() [*c]HPyModuleDef {
+    return &quickstart_c_def;
 }
 pub const __INTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `L`"); // (no file):80:9
 pub const __UINTMAX_C_SUFFIX__ = @compileError("unable to translate macro: undefined identifier `UL`"); // (no file):86:9
