@@ -9,16 +9,16 @@ const hpy = @cImport({
 pub const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 pub const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
 
-const HPySlot = hpy.HPySlot;
-const HPyMeth = hpy.HPyMeth;
-const HPyMember = hpy.HPyMember;
-const HPyGetSet = hpy.HPyGetSet;
 const HPyDef = hpy.HPyDef;
 const HPyDef_Kind = hpy.HPyDef_Kind;
 const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
 const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
 const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
 const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
+const HPySlot = hpy.HPySlot;
+const HPyMeth = hpy.HPyMeth;
+const HPyMember = hpy.HPyMember;
+const HPyGetSet = hpy.HPyGetSet;
 
 const HPyContext = hpy.HPyContext;
 const HPyModuleDef = hpy.HPyModuleDef;
