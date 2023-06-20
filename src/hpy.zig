@@ -9,25 +9,168 @@ const hpy = @cImport({
 pub const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 pub const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
 
-const HPyDef = hpy.HPyDef;
-const HPyDef_Kind = hpy.HPyDef_Kind;
-const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
-const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
-const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
-const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
-const HPySlot = hpy.HPySlot;
-const HPyMeth = hpy.HPyMeth;
-const HPyMember = hpy.HPyMember;
-const HPyGetSet = hpy.HPyGetSet;
+pub const HPy = hpy.HPy;
+const HPySlot_Slot = hpy.HPySlot_Slot;
+const HPyFunc_Signature = hpy.HPyFunc_Signature;
+const HPy_ssize_t = hpy.HPy_ssize_t;
+//pub const HPyDef = hpy.HPyDef;
+//pub const HPyDef_Kind = hpy.HPyDef_Kind;
+//pub const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
+//pub const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
+//pub const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
+//pub const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
+//pub const HPySlot = hpy.HPySlot;
+//pub const HPyMeth = hpy.HPyMeth;
+//pub const HPyMember = hpy.HPyMember;
+//pub const HPyGetSet = hpy.HPyGetSet;
 
-const HPyContext = hpy.HPyContext;
-const HPyModuleDef = hpy.HPyModuleDef;
-const cpy_PyObject = hpy.cpy_PyObject;
-const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
+pub const HPyContext = hpy.HPyContext;
+//pub const HPyCFunction = hpy.HPyCFunction;
+pub const cpy_PyCFunction = hpy.cpy_PyCFunction;
+pub const cpy_PyObject = hpy.cpy_PyObject;
+pub const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
 
-extern var _ctx_for_trampolines: *HPyContext;
+pub const HPyModuleDef = hpy.HPyModuleDef;
 
-pub fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
+pub const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
+pub const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
+
+pub const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
+
+//pub const HPySlot
+
+pub const HPySlot = extern struct {
+    // The slot to fill
+    slot: HPySlot_Slot,
+
+    // Function pointer to the slot's implementation
+    impl: *anyopaque,
+
+    // Function pointer to the CPython trampoline function which is used by
+    // CPython to call the actual HPy function ``impl``.
+    cpy_trampoline: cpy_PyCFunction,
+};
+
+pub const HPyMeth = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: [*]const u8,
+
+    // Function pointer of the C function implementation
+    impl: *anyopaque,
+
+    // Function pointer to the CPython trampoline function which is used by
+    // CPython to call the actual HPy function ``impl``.
+    cpy_trampoline: cpy_PyCFunction,
+
+    // Indicates the C function's expected signature
+    signature: HPyFunc_Signature,
+
+    // Docstring of the method (UTF-8 encoded; may be ``NULL``)
+    doc: ?[*]const u8,
+};
+
+/// Describes the type (and therefore also the size) of an HPy member.
+const HPyMember_FieldType = enum(c_int) {
+    HPyMember_SHORT = 0,
+
+    HPyMember_INT = 1,
+
+    HPyMember_LONG = 2,
+
+    HPyMember_FLOAT = 3,
+
+    HPyMember_DOUBLE = 4,
+
+    HPyMember_STRING = 5,
+
+    HPyMember_OBJECT = 6,
+    /// 1-character string
+    HPyMember_CHAR = 7,
+    /// 8-bit signed int
+    HPyMember_BYTE = 8,
+
+    /// unsigned variants:
+    HPyMember_UBYTE = 9,
+
+    HPyMember_USHORT = 10,
+
+    HPyMember_UINT = 11,
+
+    HPyMember_ULONG = 12,
+
+    HPyMember_STRING_INPLACE = 13,
+
+    HPyMember_BOOL = 14,
+
+    /// Like T_OBJECT, but raises AttributeError
+    /// when the value is NULL, instead of
+    /// converting to None.
+    HPyMember_OBJECT_EX = 16,
+    HPyMember_LONGLONG = 17,
+
+    HPyMember_ULONGLONG = 18,
+    /// HPy_ssize_t
+    HPyMember_HPYSSIZET = 19,
+    /// Value is always None
+    HPyMember_NONE = 20,
+};
+
+pub const HPyMember = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: [*]const u8,
+
+    // The type of the HPy member (see enum ``HPyMember_FieldType``).
+    type: HPyMember_FieldType,
+
+    // The location (byte offset) of the member. Usually computed with
+    // ``offsetof(type, field)``.
+    offset: HPy_ssize_t,
+
+    // Flag indicating if the member is read-only
+    readonly: c_int,
+
+    // Docstring of the member (UTF-8 encoded; may be ``NULL``)
+    doc: ?[*]const u8,
+};
+
+pub const HPyGetSet = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: [*]const u8,
+
+    // Function pointer of the C getter function (may be ``NULL``)
+    getter_impl: ?*anyopaque,
+
+    // Function pointer of the C setter function (may be ``NULL``)
+    setter_impl: ?*anyopaque,
+
+    // Docstring of the get/set descriptor (UTF-8 encoded; may be ``NULL``)
+    doc: ?[*]const u8,
+
+    // A value that will be passed to the ``getter_impl``/``setter_impl``
+    // functions.
+    closure: *anyopaque,
+};
+
+pub const HPyDef_Kind = enum(c_uint) {
+    HPyDef_Kind_Slot = 1,
+    HPyDef_Kind_Meth = 2,
+    HPyDef_Kind_Member = 3,
+    HPyDef_Kind_GetSet = 4,
+};
+
+pub const HPyDef_Val = extern union {
+    slot: HPySlot,
+    meth: HPyMeth,
+    member: HPyMember,
+    getset: HPyGetSet,
+};
+
+pub const HPyDef = extern struct {
+    kind: HPyDef_Kind,
+    val: HPyDef_Val,
+};
+
+pub inline fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
     comptime {
         std.debug.print("{s}\n", .{meth_name});
         std.debug.print("{d}\n", .{meth_sig});
@@ -40,7 +183,7 @@ pub fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
 // Is this necessary?
 
 /// Creates the module trampline function
-fn makeMethodTrampoline() fn () *cpy_PyObject {
+pub fn makeMethodTrampoline() fn () *cpy_PyObject {
     const S = struct {
         fn methodTrampoline(self: *cpy_PyObject) *cpy_PyObject {
             //var a: _HPyFunc_args_NOARGS a = {self};
@@ -52,20 +195,13 @@ fn makeMethodTrampoline() fn () *cpy_PyObject {
 }
 
 /// Creates an HPyDef struct with a custom name and kind
-fn makeHPyDef(name: []const u8, kind: HPyDef_Kind) HPyDef {
+pub fn makeHPyDef(name: []const u8, kind: HPyDef_Kind) HPyDef {
     std.debug.print("{s}\n", .{name});
     var newHPyDef = HPyDef{
         .kind = kind,
     };
     return newHPyDef;
 }
-
-const HPyDef_Union = union {
-    slot: HPySlot,
-    meth: HPyMeth,
-    member: HPyMember,
-    getset: HPyGetSet,
-};
 
 /// Return a HPyDef type (Slot, Meth, Member, or GetSet) based on parameters:
 //fn makeHPyDef_Kind(kind: HPyDef_Kind)
@@ -90,42 +226,46 @@ const HPyDef_Union = union {
 // TODO
 //fn makeHPyGetSet()
 
-pub inline fn HPy_MODINIT(ext_name: []const u8, mod_def: HPyModuleDef) void {
+pub inline fn HPy_MODINIT(comptime ext_name: []const u8, comptime mod_def: HPyModuleDef) void {
     comptime {
         const getMajorVersion = makeGetRequiredHPyVersion(HPY_ABI_VERSION);
-        const getMajorVersionFuncName = "get_required_hpy_major_version_" ++ ext_name;
+        const get_major_version_func_name = "get_required_hpy_major_version_" ++ ext_name;
         @export(getMajorVersion, .{
-            .name = getMajorVersionFuncName,
+            .name = get_major_version_func_name,
             .linkage = .Strong,
         });
 
         const getMinorVersion = makeGetRequiredHPyVersion(HPY_ABI_VERSION_MINOR);
-        const getMinorVersionFuncName = "get_required_hpy_minor_version_" ++ ext_name;
+        const get_minor_version_func_name = "get_required_hpy_minor_version_" ++ ext_name;
         @export(getMinorVersion, .{
-            .name = getMinorVersionFuncName,
+            .name = get_minor_version_func_name,
             .linkage = .Strong,
         });
 
-        const initContext = makeHPyInitGlobalContext();
-        const initContextFuncName = "HPyInitGlobalContext_" ++ ext_name;
-        @export(initContext, .{
-            .name = initContextFuncName,
-            .linkage = .Strong,
-        });
+        _ = mod_def;
+        //const HPyInitModule = makeHPyInit(mod_def);
+        //const HPyInitModuleFuncName = "HPyInit_" ++ ext_name;
+        //@export(HPyInitModule, .{
+        //    .name = HPyInitModuleFuncName,
+        //    .linkage = .Strong,
+        //});
 
-        const HPyInitModule = makeHPyInit(mod_def);
-        const HPyInitModuleFuncName = "HPyInit_" ++ ext_name;
-        @export(HPyInitModule, .{
-            .name = HPyInitModuleFuncName,
-            .linkage = .Strong,
-        });
+        //        const ModuleContext = makeHPyInitGlobalContextStruct();
+        //        const initContext = ModuleContext.HPyInitGlobalContext;
+        //        const initContextFuncName = "HPyInitGlobalContext_" ++ ext_name;
+        //        @export(initContext, .{
+        //            .name = initContextFuncName,
+        //            .linkage = .Strong,
+        //        });
+
+        //        return ModuleContext;
     }
 }
 
 /// Return a function which returns the required HPy version
-fn makeGetRequiredHPyVersion(comptime hpy_version: u32) fn () u32 {
+pub fn makeGetRequiredHPyVersion(comptime hpy_version: u32) fn () callconv(.C) u32 {
     const S = struct {
-        fn getRequiredHPyVersion() u32 {
+        pub fn getRequiredHPyVersion() callconv(.C) u32 {
             return hpy_version;
         }
     };
@@ -133,19 +273,20 @@ fn makeGetRequiredHPyVersion(comptime hpy_version: u32) fn () u32 {
 }
 
 /// Create a function which allows HPy to set the global context
-fn makeHPyInitGlobalContext() fn () void {
+pub fn makeHPyInitGlobalContextStruct() type {
     const S = struct {
-        fn HPyInitGlobalContext(ctx: *HPyContext) void {
+        pub var _ctx_for_trampolines = null;
+        pub fn HPyInitGlobalContext(ctx: *HPyContext) callconv(.C) void {
             _ctx_for_trampolines = ctx;
         }
     };
-    return S.HPyInitGlobalContext;
+    return S;
 }
 
 /// Create a function to send the module definition to HPy
-fn makeHPyInit(mod_def: HPyModuleDef) fn () *HPyModuleDef {
+pub fn makeHPyInit(comptime mod_def: HPyModuleDef) fn () callconv(.C) [*c]HPyModuleDef {
     const S = struct {
-        fn HPyInit() *HPyModuleDef {
+        pub fn HPyInit() callconv(.C) [*c]HPyModuleDef {
             return &mod_def;
         }
     };
