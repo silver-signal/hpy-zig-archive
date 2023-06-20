@@ -10,16 +10,19 @@ pub const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 pub const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
 
 pub const HPy = hpy.HPy;
-pub const HPyDef = hpy.HPyDef;
-pub const HPyDef_Kind = hpy.HPyDef_Kind;
-pub const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
-pub const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
-pub const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
-pub const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
-pub const HPySlot = hpy.HPySlot;
-pub const HPyMeth = hpy.HPyMeth;
-pub const HPyMember = hpy.HPyMember;
-pub const HPyGetSet = hpy.HPyGetSet;
+const HPySlot_Slot = hpy.HpySlot_Slot;
+const HPyFunc_Signature = hpy.HPyFunc_Signature;
+const HPy_ssize_t = hpy.HPy_ssize_t;
+//pub const HPyDef = hpy.HPyDef;
+//pub const HPyDef_Kind = hpy.HPyDef_Kind;
+//pub const HPyDef_Kind_Slot = hpy.HPyDef_Kind_Slot;
+//pub const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
+//pub const HPyDef_Kind_Member = hpy.HPyDef_Kind_Member;
+//pub const HPyDef_Kind_GetSet = hpy.HPyDef_Kind_GetSet;
+//pub const HPySlot = hpy.HPySlot;
+//pub const HPyMeth = hpy.HPyMeth;
+//pub const HPyMember = hpy.HPyMember;
+//pub const HPyGetSet = hpy.HPyGetSet;
 
 pub const HPyContext = hpy.HPyContext;
 pub const HPyCFunction = hpy.HPyCFunction;
@@ -34,7 +37,138 @@ pub const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
 
 pub const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
 
-//extern var _ctx_for_trampolines: *HPyContext;
+//pub const HPySlot
+
+pub const HPySlot = extern struct {
+    // The slot to fill
+    slot: HPySlot_Slot,
+
+    // Function pointer to the slot's implementation
+    impl: HPyCFunction,
+
+    // Function pointer to the CPython trampoline function which is used by
+    // CPython to call the actual HPy function ``impl``.
+    cpy_trampoline: cpy_PyCFunction,
+};
+
+pub const HPyMeth = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: []const u8,
+
+    // Function pointer of the C function implementation
+    impl: HPyCFunction,
+
+    // Function pointer to the CPython trampoline function which is used by
+    // CPython to call the actual HPy function ``impl``.
+    cpy_trampoline: cpy_PyCFunction,
+
+    // Indicates the C function's expected signature
+    signature: HPyFunc_Signature,
+
+    // Docstring of the method (UTF-8 encoded; may be ``NULL``)
+    doc: ?[]const u8,
+};
+
+/// Describes the type (and therefore also the size) of an HPy member.
+const HPyMember_FieldType = enum(c_int) {
+    HPyMember_SHORT = 0,
+
+    HPyMember_INT = 1,
+
+    HPyMember_LONG = 2,
+
+    HPyMember_FLOAT = 3,
+
+    HPyMember_DOUBLE = 4,
+
+    HPyMember_STRING = 5,
+
+    HPyMember_OBJECT = 6,
+    /// 1-character string
+    HPyMember_CHAR = 7,
+    /// 8-bit signed int
+    HPyMember_BYTE = 8,
+
+    /// unsigned variants:
+    HPyMember_UBYTE = 9,
+
+    HPyMember_USHORT = 10,
+
+    HPyMember_UINT = 11,
+
+    HPyMember_ULONG = 12,
+
+    HPyMember_STRING_INPLACE = 13,
+
+    HPyMember_BOOL = 14,
+
+    /// Like T_OBJECT, but raises AttributeError
+    /// when the value is NULL, instead of
+    /// converting to None.
+    HPyMember_OBJECT_EX = 16,
+    HPyMember_LONGLONG = 17,
+
+    HPyMember_ULONGLONG = 18,
+    /// HPy_ssize_t
+    HPyMember_HPYSSIZET = 19,
+    /// Value is always None
+    HPyMember_NONE = 20,
+};
+
+pub const HPyMember = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: []const u8,
+
+    // The type of the HPy member (see enum ``HPyMember_FieldType``).
+    type: HPyMember_FieldType,
+
+    // The location (byte offset) of the member. Usually computed with
+    // ``offsetof(type, field)``.
+    offset: HPy_ssize_t,
+
+    // Flag indicating if the member is read-only
+    readonly: c_int,
+
+    // Docstring of the member (UTF-8 encoded; may be ``NULL``)
+    doc: ?[]const u8,
+};
+
+pub const HPyGetSet = extern struct {
+    // The name of Python attribute (UTF-8 encoded)
+    name: []const u8,
+
+    // Function pointer of the C getter function (may be ``NULL``)
+    getter_impl: ?HPyCFunction,
+
+    // Function pointer of the C setter function (may be ``NULL``)
+    setter_impl: ?HPyCFunction,
+
+    // Docstring of the get/set descriptor (UTF-8 encoded; may be ``NULL``)
+    doc: ?[]const u8,
+
+    // A value that will be passed to the ``getter_impl``/``setter_impl``
+    // functions.
+    closure: *anyopaque,
+};
+
+pub const HPyDef_Kind = enum(c_uint) {
+    HPyDef_Kind_Slot = 1,
+    HPyDef_Kind_Meth = 2,
+    HPyDef_Kind_Member = 3,
+    HPyDef_Kind_GetSet = 4,
+};
+
+pub const HPyDef_Val = extern union {
+    slot: HPySlot,
+    meth: HPyMeth,
+    member: HPyMember,
+    getset: HPyGetSet,
+};
+
+pub const HPyDef = extern struct {
+    kind: HPyDef_Kind,
+    val: HPyDef_Val,
+};
 
 pub inline fn HPyDef_METH(meth_name: []const u8, meth_sig: c_int) void {
     comptime {

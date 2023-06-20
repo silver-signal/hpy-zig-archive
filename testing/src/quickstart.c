@@ -135,13 +135,13 @@ static HPy say_hello_impl(HPyContext *ctx, HPy self)
 }
 
 // Is this important? Can we just ask for a tuple of function pointers?
-const static HPyDef *QuickstartCMethods[] = {
+static HPyDef *QuickstartCMethods[] = {
     &say_hello, // 'say_hello' generated for us by the HPyDef_METH macro
     NULL,
 };
 
 // This should stay. This gives the user the ability to define aspects of the module.
-const static HPyModuleDef quickstart_c_def = {
+static HPyModuleDef quickstart_c_def = {
     .doc = "HPy Quickstart C Example",
     .defines = QuickstartCMethods,
 };

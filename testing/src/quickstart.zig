@@ -6,7 +6,7 @@ const HPy = hpy.HPy;
 
 const HPyDef = hpy.HPyDef;
 const HPyMeth = hpy.HPyMeth;
-const HPyDef_Kind_Meth = hpy.HPyDef_Kind_Meth;
+const HPyDef_Kind = hpy.HPyDef_Kind;
 const HPyContext = hpy.HPyContext;
 const cpy_PyObject = hpy.cpy_PyObject;
 const HPyCFunction = hpy.HPyCFunction;
@@ -16,6 +16,8 @@ const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
 const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
 const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
+
+const HPy_ssize_t = isize;
 
 const HPY_ABI_VERSION = hpy.HPY_ABI_VERSION;
 const HPY_ABI_VERSION_MINOR = hpy.HPY_ABI_VERSION_MINOR;
@@ -44,8 +46,8 @@ pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObjec
     return a.result;
 }
 pub export var say_hello: HPyDef = HPyDef{
-    .kind = @bitCast(c_uint, HPyDef_Kind_Meth),
-    .unnamed_0 = .{ // FIXME
+    .kind = HPyDef_Kind.HPyDef_Kind_Meth,
+    .val = .{ // FIXME
         .meth = HPyMeth{
             .name = "say_hello",
             .impl = @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)),
@@ -56,15 +58,15 @@ pub export var say_hello: HPyDef = HPyDef{
     },
 };
 
-var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
+pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
     &say_hello,
     null,
 };
-var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
+pub const quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
-    .size = 0,
+    .size = @import("std").mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
-    .defines = @ptrCast([*c][*c]HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]HPyDef), &QuickstartCMethods)),
+    .defines = @ptrCast([*c][*c]const HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]const HPyDef), &QuickstartCMethods)),
     .globals = null,
 };
 

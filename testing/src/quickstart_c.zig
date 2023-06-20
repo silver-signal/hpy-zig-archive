@@ -2362,7 +2362,7 @@ pub fn HPyErr_SetFromErrnoWithFilenameObject(arg_ctx: [*c]HPyContext, arg_h_type
     return HPyErr_SetFromErrnoWithFilenameObjects(ctx, h_type, filename, HPy{
         ._i = @bitCast(isize, @as(c_long, @as(c_int, 0))),
     });
-} // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h:66:1: warning: TODO unable to translate variadic function, demoted to extern
+} // /home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h:66:1: warning: TODO unable to translate variadic function, demoted to extern
 pub extern fn HPyTuple_Pack(ctx: [*c]HPyContext, n: HPy_ssize_t, ...) HPy;
 pub fn HPy_DelAttr(arg_ctx: [*c]HPyContext, arg_obj: HPy, arg_name: HPy) callconv(.C) c_int {
     var ctx = arg_ctx;
@@ -2388,7 +2388,7 @@ pub fn HPyLong_FromLong(arg_ctx: [*c]HPyContext, arg_l: c_long) callconv(.C) HPy
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_long) <= @sizeOf(i64)) {} else {
-                __assert_fail("sizeof(long) <= sizeof(int64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 145)), "HPy HPyLong_FromLong(HPyContext *, long)");
+                __assert_fail("sizeof(long) <= sizeof(int64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 145)), "HPy HPyLong_FromLong(HPyContext *, long)");
             };
         };
     };
@@ -2402,7 +2402,7 @@ pub fn HPyLong_FromUnsignedLong(arg_ctx: [*c]HPyContext, arg_l: c_ulong) callcon
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_ulong) <= @sizeOf(u64)) {} else {
-                __assert_fail("sizeof(unsigned long) <= sizeof(uint64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 165)), "HPy HPyLong_FromUnsignedLong(HPyContext *, unsigned long)");
+                __assert_fail("sizeof(unsigned long) <= sizeof(uint64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 165)), "HPy HPyLong_FromUnsignedLong(HPyContext *, unsigned long)");
             };
         };
     };
@@ -2415,7 +2415,7 @@ pub fn HPyLong_FromLongLong(arg_ctx: [*c]HPyContext, arg_l: c_longlong) callconv
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_longlong) <= @sizeOf(i64)) {} else {
-                __assert_fail("sizeof(long long) <= sizeof(int64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 183)), "HPy HPyLong_FromLongLong(HPyContext *, long long)");
+                __assert_fail("sizeof(long long) <= sizeof(int64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 183)), "HPy HPyLong_FromLongLong(HPyContext *, long long)");
             };
         };
     };
@@ -2428,7 +2428,7 @@ pub fn HPyLong_FromUnsignedLongLong(arg_ctx: [*c]HPyContext, arg_l: c_ulonglong)
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_ulonglong) <= @sizeOf(u64)) {} else {
-                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 201)), "HPy HPyLong_FromUnsignedLongLong(HPyContext *, unsigned long long)");
+                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 201)), "HPy HPyLong_FromUnsignedLongLong(HPyContext *, unsigned long long)");
             };
         };
     };
@@ -2459,7 +2459,7 @@ pub fn HPyLong_AsLongLong(arg_ctx: [*c]HPyContext, arg_h: HPy) callconv(.C) c_lo
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_longlong) <= @sizeOf(i64)) {} else {
-                __assert_fail("sizeof(long long) <= sizeof(int64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 322)), "long long HPyLong_AsLongLong(HPyContext *, HPy)");
+                __assert_fail("sizeof(long long) <= sizeof(int64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 322)), "long long HPyLong_AsLongLong(HPyContext *, HPy)");
             };
         };
     };
@@ -2472,7 +2472,7 @@ pub fn HPyLong_AsUnsignedLongLong(arg_ctx: [*c]HPyContext, arg_h: HPy) callconv(
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_ulonglong) <= @sizeOf(u64)) {} else {
-                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 348)), "unsigned long long HPyLong_AsUnsignedLongLong(HPyContext *, HPy)");
+                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 348)), "unsigned long long HPyLong_AsUnsignedLongLong(HPyContext *, HPy)");
             };
         };
     };
@@ -2485,7 +2485,7 @@ pub fn HPyLong_AsUnsignedLongLongMask(arg_ctx: [*c]HPyContext, arg_h: HPy) callc
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (@sizeOf(c_ulonglong) <= @sizeOf(u64)) {} else {
-                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 377)), "unsigned long long HPyLong_AsUnsignedLongLongMask(HPyContext *, HPy)");
+                __assert_fail("sizeof(unsigned long long) <= sizeof(uint64_t)", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 377)), "unsigned long long HPyLong_AsUnsignedLongLongMask(HPyContext *, HPy)");
             };
         };
     };
@@ -2507,7 +2507,7 @@ pub fn HPySlice_AdjustIndices(arg___HPy_UNUSED_TAGGEDctx: [*c]HPyContext, arg_le
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (step != @bitCast(HPy_ssize_t, @as(c_long, @as(c_int, 0)))) {} else {
-                __assert_fail("step != 0", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 426)), "HPy_ssize_t HPySlice_AdjustIndices(HPyContext *, HPy_ssize_t, HPy_ssize_t *, HPy_ssize_t *, HPy_ssize_t)");
+                __assert_fail("step != 0", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 426)), "HPy_ssize_t HPySlice_AdjustIndices(HPyContext *, HPy_ssize_t, HPy_ssize_t *, HPy_ssize_t *, HPy_ssize_t)");
             };
         };
     };
@@ -2515,7 +2515,7 @@ pub fn HPySlice_AdjustIndices(arg___HPy_UNUSED_TAGGEDctx: [*c]HPyContext, arg_le
         _ = @sizeOf(c_int);
         break :blk blk_1: {
             break :blk_1 if (step >= -@as(c_long, 9223372036854775807)) {} else {
-                __assert_fail("step >= -HPY_SSIZE_T_MAX", "/home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 427)), "HPy_ssize_t HPySlice_AdjustIndices(HPyContext *, HPy_ssize_t, HPy_ssize_t *, HPy_ssize_t *, HPy_ssize_t)");
+                __assert_fail("step >= -HPY_SSIZE_T_MAX", "/home/february/projects/hpy/hpy/devel/include/hpy/inline_helpers.h", @bitCast(c_uint, @as(c_int, 427)), "HPy_ssize_t HPySlice_AdjustIndices(HPyContext *, HPy_ssize_t, HPy_ssize_t *, HPy_ssize_t *, HPy_ssize_t)");
             };
         };
     };
@@ -2609,15 +2609,15 @@ pub export var say_hello: HPyDef = HPyDef{
         },
     },
 };
-pub var QuickstartCMethods: [2][*c]const HPyDef = [2][*c]const HPyDef{
+pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
     &say_hello,
     null,
 };
-pub const quickstart_c_def: HPyModuleDef = HPyModuleDef{
+pub var quickstart_c_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
     .size = @import("std").mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
-    .defines = @ptrCast([*c][*c]const HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]const HPyDef), &QuickstartCMethods)),
+    .defines = @ptrCast([*c][*c]HPyDef, @alignCast(@import("std").meta.alignment([*c][*c]HPyDef), &QuickstartCMethods)),
     .globals = null,
 };
 pub export fn get_required_hpy_major_version_quickstart_c() u32 {
@@ -2718,126 +2718,126 @@ pub const __FD_CLR = @compileError("unable to translate C expr: expected ')' ins
 pub const __PTHREAD_MUTEX_INITIALIZER = @compileError("unable to translate C expr: unexpected token '{'"); // /usr/include/bits/struct_mutex.h:56:10
 pub const __PTHREAD_RWLOCK_ELISION_EXTRA = @compileError("unable to translate C expr: unexpected token '{'"); // /usr/include/bits/struct_rwlock.h:40:11
 pub const __ONCE_FLAG_INIT = @compileError("unable to translate C expr: unexpected token '{'"); // /usr/include/bits/thread-shared-types.h:113:9
-pub const va_start = @compileError("unable to translate macro: undefined identifier `__builtin_va_start`"); // /snap/zig/7661/lib/include/stdarg.h:33:9
-pub const va_end = @compileError("unable to translate macro: undefined identifier `__builtin_va_end`"); // /snap/zig/7661/lib/include/stdarg.h:35:9
-pub const va_arg = @compileError("unable to translate macro: undefined identifier `__builtin_va_arg`"); // /snap/zig/7661/lib/include/stdarg.h:36:9
-pub const __va_copy = @compileError("unable to translate macro: undefined identifier `__builtin_va_copy`"); // /snap/zig/7661/lib/include/stdarg.h:41:9
-pub const va_copy = @compileError("unable to translate macro: undefined identifier `__builtin_va_copy`"); // /snap/zig/7661/lib/include/stdarg.h:46:9
-pub const _HPy_HIDDEN = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:71:12
-pub const _HPy_UNUSED = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:72:12
-pub const _HPy_UNUSED_ARG = @compileError("unable to translate macro: undefined identifier `__HPy_UNUSED_TAGGED`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:77:9
-pub const _HPy_NO_RETURN = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:83:11
-pub const _HPY_compiler_has_attribute = @compileError("unable to translate macro: undefined identifier `__has_attribute`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:94:12
-pub const _HPY_LEGACY = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:102:13
-pub const HPyAPI_FUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy.h:140:9
-pub const HPy_EXPORTED_SYMBOL = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpyexports.h:9:17
-pub const HPy_New = @compileError("unable to translate C expr: expected ')' instead got '*'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/macros.h:12:9
-pub const HPy_RETURN_RICHCOMPARE = @compileError("unable to translate macro: undefined identifier `result`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/macros.h:29:9
-pub const HPy_BEGIN_LEAVE_PYTHON = @compileError("unable to translate macro: undefined identifier `_token`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/macros.h:64:9
-pub const HPy_END_LEAVE_PYTHON = @compileError("unable to translate macro: undefined identifier `_token`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/macros.h:68:9
-pub const HPyFunc_DECLARE = @compileError("unable to translate macro: undefined identifier `_sig`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpyfunc.h:66:9
-pub const HPyFunc_TRAMPOLINE = @compileError("unable to translate macro: undefined identifier `_sig`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpyfunc.h:78:9
-pub const HPy_VISIT = @compileError("unable to translate macro: undefined identifier `vret`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpyfunc.h:104:9
-pub const _HPyFunc_DECLARE_HPyFunc_NOARGS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:13:9
-pub const _HPyFunc_DECLARE_HPyFunc_O = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:14:9
-pub const _HPyFunc_DECLARE_HPyFunc_VARARGS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:15:9
-pub const _HPyFunc_DECLARE_HPyFunc_KEYWORDS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:16:9
-pub const _HPyFunc_DECLARE_HPyFunc_UNARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:17:9
-pub const _HPyFunc_DECLARE_HPyFunc_BINARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:18:9
-pub const _HPyFunc_DECLARE_HPyFunc_TERNARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:19:9
-pub const _HPyFunc_DECLARE_HPyFunc_INQUIRY = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:20:9
-pub const _HPyFunc_DECLARE_HPyFunc_LENFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:21:9
-pub const _HPyFunc_DECLARE_HPyFunc_SSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:22:9
-pub const _HPyFunc_DECLARE_HPyFunc_SSIZESSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:23:9
-pub const _HPyFunc_DECLARE_HPyFunc_SSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:24:9
-pub const _HPyFunc_DECLARE_HPyFunc_SSIZESSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:25:9
-pub const _HPyFunc_DECLARE_HPyFunc_OBJOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:26:9
-pub const _HPyFunc_DECLARE_HPyFunc_FREEFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:27:9
-pub const _HPyFunc_DECLARE_HPyFunc_GETATTRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:28:9
-pub const _HPyFunc_DECLARE_HPyFunc_GETATTROFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:29:9
-pub const _HPyFunc_DECLARE_HPyFunc_SETATTRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:30:9
-pub const _HPyFunc_DECLARE_HPyFunc_SETATTROFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:31:9
-pub const _HPyFunc_DECLARE_HPyFunc_REPRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:32:9
-pub const _HPyFunc_DECLARE_HPyFunc_HASHFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:33:9
-pub const _HPyFunc_DECLARE_HPyFunc_RICHCMPFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:34:9
-pub const _HPyFunc_DECLARE_HPyFunc_GETITERFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:35:9
-pub const _HPyFunc_DECLARE_HPyFunc_ITERNEXTFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:36:9
-pub const _HPyFunc_DECLARE_HPyFunc_DESCRGETFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:37:9
-pub const _HPyFunc_DECLARE_HPyFunc_DESCRSETFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:38:9
-pub const _HPyFunc_DECLARE_HPyFunc_INITPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:39:9
-pub const _HPyFunc_DECLARE_HPyFunc_NEWFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:40:9
-pub const _HPyFunc_DECLARE_HPyFunc_GETTER = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:41:9
-pub const _HPyFunc_DECLARE_HPyFunc_SETTER = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:42:9
-pub const _HPyFunc_DECLARE_HPyFunc_OBJOBJPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:43:9
-pub const _HPyFunc_DECLARE_HPyFunc_GETBUFFERPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:44:9
-pub const _HPyFunc_DECLARE_HPyFunc_RELEASEBUFFERPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:45:9
-pub const _HPyFunc_DECLARE_HPyFunc_TRAVERSEPROC = @compileError("unable to translate macro: undefined identifier `object`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:46:9
-pub const _HPyFunc_DECLARE_HPyFunc_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:47:9
-pub const _HPyFunc_DECLARE_HPyFunc_DESTROYFUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:48:9
-pub const _HPyFunc_DECLARE_HPyFunc_MOD_CREATE = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:49:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_VARARGS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:45:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_KEYWORDS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:55:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_INITPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:66:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_NEWFUNC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:76:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESTROYFUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:89:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_RICHCMPFUNC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:95:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETBUFFERPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:112:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_RELEASEBUFFERPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:126:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_TRAVERSEPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:144:9
-pub const HPyCapsule_DESTRUCTOR_TRAMPOLINE = @compileError("unable to translate macro: undefined identifier `capsule`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:154:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_MOD_CREATE = @compileError("unable to translate macro: undefined identifier `spec`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:166:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_NOARGS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:18:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_O = @compileError("unable to translate macro: undefined identifier `self`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:33:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_UNARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:47:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_BINARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:62:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_TERNARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:78:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_INQUIRY = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:92:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_LENFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:106:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:121:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZESSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:137:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:153:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZESSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:170:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_OBJOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:186:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_FREEFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:199:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETATTRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:214:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETATTROFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:229:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETATTRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:245:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETATTROFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:261:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_REPRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:275:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_HASHFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:289:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETITERFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:303:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_ITERNEXTFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:317:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESCRGETFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:333:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESCRSETFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:349:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETTER = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:364:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETTER = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:380:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_OBJOBJPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:395:9
-pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:408:9
-pub const offsetof = @compileError("unable to translate macro: undefined identifier `__builtin_offsetof`"); // /snap/zig/7661/lib/include/stddef.h:111:9
-pub const HPySlot_SIG = @compileError("unable to translate macro: undefined identifier `_HPySlot_SIG__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:219:9
-pub const HPyDef_SLOT_IMPL = @compileError("unable to translate macro: undefined identifier `_slot`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:232:9
-pub const HPyDef_SLOT = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:252:9
-pub const _HPyDef_SLOT = @compileError("unable to translate macro: undefined identifier `_trampoline`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:256:9
-pub const HPyDef_METH_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:269:9
-pub const HPyDef_METH = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:301:9
-pub const HPyDef_MEMBER = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:321:9
-pub const HPyDef_GET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:332:9
-pub const HPyDef_GET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:359:9
-pub const HPyDef_SET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:362:9
-pub const HPyDef_SET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:389:9
-pub const HPyDef_GETSET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:392:9
-pub const HPyDef_GETSET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:424:9
-pub const HPyCapsule_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:427:9
-pub const HPyDef_CALL_FUNCTION = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpydef.h:450:9
-pub const HPyAPI_UNUSED = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:6:9
-pub const _HPyType_HELPER_TYPE = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:209:9
-pub const _HPyType_HELPER_FNAME = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:210:9
-pub const _HPyType_HELPER_DEFINE_SHAPE = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:211:9
-pub const _HPyType_HELPER_AS_STRUCT = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:213:9
-pub const HPyType_HELPERS = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:263:9
-pub const SHAPE = @compileError("unable to translate macro: undefined identifier `_SHAPE`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpytype.h:276:9
-pub const HPY_MOD_EMBEDDABLE = @compileError("unable to translate C expr: unexpected token 'Eof'"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpymodule.h:23:9
-pub const HPy_MODINIT = @compileError("unable to translate macro: undefined identifier `get_required_hpy_major_version_`"); // /home/f-cozzocrea/venv/hpy/lib64/python3.10/site-packages/hpy/devel/include/hpy/hpymodule.h:130:9
+pub const va_start = @compileError("unable to translate macro: undefined identifier `__builtin_va_start`"); // /snap/zig/7691/lib/include/stdarg.h:33:9
+pub const va_end = @compileError("unable to translate macro: undefined identifier `__builtin_va_end`"); // /snap/zig/7691/lib/include/stdarg.h:35:9
+pub const va_arg = @compileError("unable to translate macro: undefined identifier `__builtin_va_arg`"); // /snap/zig/7691/lib/include/stdarg.h:36:9
+pub const __va_copy = @compileError("unable to translate macro: undefined identifier `__builtin_va_copy`"); // /snap/zig/7691/lib/include/stdarg.h:41:9
+pub const va_copy = @compileError("unable to translate macro: undefined identifier `__builtin_va_copy`"); // /snap/zig/7691/lib/include/stdarg.h:46:9
+pub const _HPy_HIDDEN = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:71:12
+pub const _HPy_UNUSED = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:72:12
+pub const _HPy_UNUSED_ARG = @compileError("unable to translate macro: undefined identifier `__HPy_UNUSED_TAGGED`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:77:9
+pub const _HPy_NO_RETURN = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:83:11
+pub const _HPY_compiler_has_attribute = @compileError("unable to translate macro: undefined identifier `__has_attribute`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:94:12
+pub const _HPY_LEGACY = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:102:13
+pub const HPyAPI_FUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/february/projects/hpy/hpy/devel/include/hpy.h:140:9
+pub const HPy_EXPORTED_SYMBOL = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpyexports.h:9:17
+pub const HPy_New = @compileError("unable to translate C expr: expected ')' instead got '*'"); // /home/february/projects/hpy/hpy/devel/include/hpy/macros.h:12:9
+pub const HPy_RETURN_RICHCOMPARE = @compileError("unable to translate macro: undefined identifier `result`"); // /home/february/projects/hpy/hpy/devel/include/hpy/macros.h:29:9
+pub const HPy_BEGIN_LEAVE_PYTHON = @compileError("unable to translate macro: undefined identifier `_token`"); // /home/february/projects/hpy/hpy/devel/include/hpy/macros.h:64:9
+pub const HPy_END_LEAVE_PYTHON = @compileError("unable to translate macro: undefined identifier `_token`"); // /home/february/projects/hpy/hpy/devel/include/hpy/macros.h:68:9
+pub const HPyFunc_DECLARE = @compileError("unable to translate macro: undefined identifier `_sig`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpyfunc.h:66:9
+pub const HPyFunc_TRAMPOLINE = @compileError("unable to translate macro: undefined identifier `_sig`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpyfunc.h:78:9
+pub const HPy_VISIT = @compileError("unable to translate macro: undefined identifier `vret`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpyfunc.h:104:9
+pub const _HPyFunc_DECLARE_HPyFunc_NOARGS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:13:9
+pub const _HPyFunc_DECLARE_HPyFunc_O = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:14:9
+pub const _HPyFunc_DECLARE_HPyFunc_VARARGS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:15:9
+pub const _HPyFunc_DECLARE_HPyFunc_KEYWORDS = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:16:9
+pub const _HPyFunc_DECLARE_HPyFunc_UNARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:17:9
+pub const _HPyFunc_DECLARE_HPyFunc_BINARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:18:9
+pub const _HPyFunc_DECLARE_HPyFunc_TERNARYFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:19:9
+pub const _HPyFunc_DECLARE_HPyFunc_INQUIRY = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:20:9
+pub const _HPyFunc_DECLARE_HPyFunc_LENFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:21:9
+pub const _HPyFunc_DECLARE_HPyFunc_SSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:22:9
+pub const _HPyFunc_DECLARE_HPyFunc_SSIZESSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:23:9
+pub const _HPyFunc_DECLARE_HPyFunc_SSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:24:9
+pub const _HPyFunc_DECLARE_HPyFunc_SSIZESSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:25:9
+pub const _HPyFunc_DECLARE_HPyFunc_OBJOBJARGPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:26:9
+pub const _HPyFunc_DECLARE_HPyFunc_FREEFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:27:9
+pub const _HPyFunc_DECLARE_HPyFunc_GETATTRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:28:9
+pub const _HPyFunc_DECLARE_HPyFunc_GETATTROFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:29:9
+pub const _HPyFunc_DECLARE_HPyFunc_SETATTRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:30:9
+pub const _HPyFunc_DECLARE_HPyFunc_SETATTROFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:31:9
+pub const _HPyFunc_DECLARE_HPyFunc_REPRFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:32:9
+pub const _HPyFunc_DECLARE_HPyFunc_HASHFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:33:9
+pub const _HPyFunc_DECLARE_HPyFunc_RICHCMPFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:34:9
+pub const _HPyFunc_DECLARE_HPyFunc_GETITERFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:35:9
+pub const _HPyFunc_DECLARE_HPyFunc_ITERNEXTFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:36:9
+pub const _HPyFunc_DECLARE_HPyFunc_DESCRGETFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:37:9
+pub const _HPyFunc_DECLARE_HPyFunc_DESCRSETFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:38:9
+pub const _HPyFunc_DECLARE_HPyFunc_INITPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:39:9
+pub const _HPyFunc_DECLARE_HPyFunc_NEWFUNC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:40:9
+pub const _HPyFunc_DECLARE_HPyFunc_GETTER = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:41:9
+pub const _HPyFunc_DECLARE_HPyFunc_SETTER = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:42:9
+pub const _HPyFunc_DECLARE_HPyFunc_OBJOBJPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:43:9
+pub const _HPyFunc_DECLARE_HPyFunc_GETBUFFERPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:44:9
+pub const _HPyFunc_DECLARE_HPyFunc_RELEASEBUFFERPROC = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:45:9
+pub const _HPyFunc_DECLARE_HPyFunc_TRAVERSEPROC = @compileError("unable to translate macro: undefined identifier `object`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:46:9
+pub const _HPyFunc_DECLARE_HPyFunc_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:47:9
+pub const _HPyFunc_DECLARE_HPyFunc_DESTROYFUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:48:9
+pub const _HPyFunc_DECLARE_HPyFunc_MOD_CREATE = @compileError("unable to translate macro: undefined identifier `ctx`"); // /home/february/projects/hpy/hpy/devel/include/hpy/autogen_hpyfunc_declare.h:49:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_VARARGS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:45:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_KEYWORDS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:55:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_INITPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:66:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_NEWFUNC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:76:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESTROYFUNC = @compileError("unable to translate C expr: unexpected token 'static'"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:89:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_RICHCMPFUNC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:95:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETBUFFERPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:112:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_RELEASEBUFFERPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:126:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_TRAVERSEPROC = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:144:9
+pub const HPyCapsule_DESTRUCTOR_TRAMPOLINE = @compileError("unable to translate macro: undefined identifier `capsule`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:154:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_MOD_CREATE = @compileError("unable to translate macro: undefined identifier `spec`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/hpyfunc_trampolines.h:166:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_NOARGS = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:18:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_O = @compileError("unable to translate macro: undefined identifier `self`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:33:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_UNARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:47:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_BINARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:62:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_TERNARYFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:78:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_INQUIRY = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:92:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_LENFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:106:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:121:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZESSIZEARGFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:137:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:153:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SSIZESSIZEOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:170:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_OBJOBJARGPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:186:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_FREEFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:199:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETATTRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:214:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETATTROFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:229:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETATTRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:245:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETATTROFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:261:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_REPRFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:275:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_HASHFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:289:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETITERFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:303:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_ITERNEXTFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:317:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESCRGETFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:333:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESCRSETFUNC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:349:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_GETTER = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:364:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_SETTER = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:380:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_OBJOBJPROC = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:395:9
+pub const _HPyFunc_TRAMPOLINE_HPyFunc_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `arg0`"); // /home/february/projects/hpy/hpy/devel/include/hpy/universal/autogen_hpyfunc_trampolines.h:408:9
+pub const offsetof = @compileError("unable to translate macro: undefined identifier `__builtin_offsetof`"); // /snap/zig/7691/lib/include/stddef.h:111:9
+pub const HPySlot_SIG = @compileError("unable to translate macro: undefined identifier `_HPySlot_SIG__`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:219:9
+pub const HPyDef_SLOT_IMPL = @compileError("unable to translate macro: undefined identifier `_slot`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:232:9
+pub const HPyDef_SLOT = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:252:9
+pub const _HPyDef_SLOT = @compileError("unable to translate macro: undefined identifier `_trampoline`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:256:9
+pub const HPyDef_METH_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:269:9
+pub const HPyDef_METH = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:301:9
+pub const HPyDef_MEMBER = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:321:9
+pub const HPyDef_GET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:332:9
+pub const HPyDef_GET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:359:9
+pub const HPyDef_SET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:362:9
+pub const HPyDef_SET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:389:9
+pub const HPyDef_GETSET_IMPL = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:392:9
+pub const HPyDef_GETSET = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:424:9
+pub const HPyCapsule_DESTRUCTOR = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:427:9
+pub const HPyDef_CALL_FUNCTION = @compileError("unable to translate macro: undefined identifier `_impl`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpydef.h:450:9
+pub const HPyAPI_UNUSED = @compileError("unable to translate macro: undefined identifier `__attribute__`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:6:9
+pub const _HPyType_HELPER_TYPE = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:209:9
+pub const _HPyType_HELPER_FNAME = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:210:9
+pub const _HPyType_HELPER_DEFINE_SHAPE = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:211:9
+pub const _HPyType_HELPER_AS_STRUCT = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:213:9
+pub const HPyType_HELPERS = @compileError("unable to translate C expr: expected ')' instead got '...'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:263:9
+pub const SHAPE = @compileError("unable to translate macro: undefined identifier `_SHAPE`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpytype.h:276:9
+pub const HPY_MOD_EMBEDDABLE = @compileError("unable to translate C expr: unexpected token 'Eof'"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpymodule.h:23:9
+pub const HPy_MODINIT = @compileError("unable to translate macro: undefined identifier `get_required_hpy_major_version_`"); // /home/february/projects/hpy/hpy/devel/include/hpy/hpymodule.h:130:9
 pub const __ASSERT_VOID_CAST = @compileError("unable to translate C expr: unexpected token 'Eof'"); // /usr/include/assert.h:40:10
 pub const assert = @compileError("unable to translate macro: undefined identifier `__extension__`"); // /usr/include/assert.h:107:11
 pub const __ASSERT_FUNCTION = @compileError("unable to translate macro: undefined identifier `__extension__`"); // /usr/include/assert.h:129:12
@@ -2847,7 +2847,7 @@ pub const __clang__ = @as(c_int, 1);
 pub const __clang_major__ = @as(c_int, 16);
 pub const __clang_minor__ = @as(c_int, 0);
 pub const __clang_patchlevel__ = @as(c_int, 1);
-pub const __clang_version__ = "16.0.1 (https://github.com/ziglang/zig-bootstrap 710c5d12660235bc4eac103a8c6677c61f0a9ded)";
+pub const __clang_version__ = "16.0.1 (https://github.com/ziglang/zig-bootstrap bf1b2cdb83141ad9336eec42160c9fe87f90198d)";
 pub const __GNUC__ = @as(c_int, 4);
 pub const __GNUC_MINOR__ = @as(c_int, 2);
 pub const __GNUC_PATCHLEVEL__ = @as(c_int, 1);
@@ -2864,7 +2864,7 @@ pub const __OPENCL_MEMORY_SCOPE_DEVICE = @as(c_int, 2);
 pub const __OPENCL_MEMORY_SCOPE_ALL_SVM_DEVICES = @as(c_int, 3);
 pub const __OPENCL_MEMORY_SCOPE_SUB_GROUP = @as(c_int, 4);
 pub const __PRAGMA_REDEFINE_EXTNAME = @as(c_int, 1);
-pub const __VERSION__ = "Clang 16.0.1 (https://github.com/ziglang/zig-bootstrap 710c5d12660235bc4eac103a8c6677c61f0a9ded)";
+pub const __VERSION__ = "Clang 16.0.1 (https://github.com/ziglang/zig-bootstrap bf1b2cdb83141ad9336eec42160c9fe87f90198d)";
 pub const __OBJC_BOOL_IS_BOOL = @as(c_int, 0);
 pub const __CONSTANT_CFSTRINGS__ = @as(c_int, 1);
 pub const __clang_literal_encoding__ = "UTF-8";
@@ -3173,15 +3173,13 @@ pub const __x86_64 = @as(c_int, 1);
 pub const __x86_64__ = @as(c_int, 1);
 pub const __SEG_GS = @as(c_int, 1);
 pub const __SEG_FS = @as(c_int, 1);
-pub const __k8 = @as(c_int, 1);
-pub const __k8__ = @as(c_int, 1);
-pub const __tune_k8__ = @as(c_int, 1);
+pub const __corei7 = @as(c_int, 1);
+pub const __corei7__ = @as(c_int, 1);
+pub const __tune_corei7__ = @as(c_int, 1);
 pub const __REGISTER_PREFIX__ = "";
 pub const __NO_MATH_INLINES = @as(c_int, 1);
 pub const __AES__ = @as(c_int, 1);
-pub const __VAES__ = @as(c_int, 1);
 pub const __PCLMUL__ = @as(c_int, 1);
-pub const __VPCLMULQDQ__ = @as(c_int, 1);
 pub const __LAHF_SAHF__ = @as(c_int, 1);
 pub const __LZCNT__ = @as(c_int, 1);
 pub const __RDRND__ = @as(c_int, 1);
@@ -3189,35 +3187,21 @@ pub const __FSGSBASE__ = @as(c_int, 1);
 pub const __BMI__ = @as(c_int, 1);
 pub const __BMI2__ = @as(c_int, 1);
 pub const __POPCNT__ = @as(c_int, 1);
+pub const __RTM__ = @as(c_int, 1);
 pub const __PRFCHW__ = @as(c_int, 1);
 pub const __RDSEED__ = @as(c_int, 1);
 pub const __ADX__ = @as(c_int, 1);
 pub const __MOVBE__ = @as(c_int, 1);
 pub const __FMA__ = @as(c_int, 1);
 pub const __F16C__ = @as(c_int, 1);
-pub const __GFNI__ = @as(c_int, 1);
-pub const __AVX512CD__ = @as(c_int, 1);
-pub const __AVX512VPOPCNTDQ__ = @as(c_int, 1);
-pub const __AVX512VNNI__ = @as(c_int, 1);
-pub const __AVX512DQ__ = @as(c_int, 1);
-pub const __AVX512BITALG__ = @as(c_int, 1);
-pub const __AVX512BW__ = @as(c_int, 1);
-pub const __AVX512VL__ = @as(c_int, 1);
-pub const __AVX512VBMI__ = @as(c_int, 1);
-pub const __AVX512VBMI2__ = @as(c_int, 1);
-pub const __AVX512IFMA__ = @as(c_int, 1);
-pub const __AVX512VP2INTERSECT__ = @as(c_int, 1);
-pub const __SHA__ = @as(c_int, 1);
 pub const __FXSR__ = @as(c_int, 1);
 pub const __XSAVE__ = @as(c_int, 1);
 pub const __XSAVEOPT__ = @as(c_int, 1);
 pub const __XSAVEC__ = @as(c_int, 1);
 pub const __XSAVES__ = @as(c_int, 1);
 pub const __CLFLUSHOPT__ = @as(c_int, 1);
-pub const __CLWB__ = @as(c_int, 1);
-pub const __RDPID__ = @as(c_int, 1);
 pub const __INVPCID__ = @as(c_int, 1);
-pub const __AVX512F__ = @as(c_int, 1);
+pub const __CRC32__ = @as(c_int, 1);
 pub const __AVX2__ = @as(c_int, 1);
 pub const __AVX__ = @as(c_int, 1);
 pub const __SSE4_2__ = @as(c_int, 1);
