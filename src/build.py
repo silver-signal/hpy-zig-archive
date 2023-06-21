@@ -20,13 +20,8 @@ def build(
     pyinclude = Path(get_path("include"))
     python_header_dirs = [str(p) for p in pyinclude.iterdir() if p.is_dir()]
    
-    # FIXME: Need to automate getting clang's include paths
-    clang_include_paths = [] # ["/usr/lib/llvm-14/lib/clang/14.0.0/include"]
-    unix_include_paths = [] # ["/usr/include", "/usr/include/x86_64-linux-gnu", "/usr/local/include",]
     include_paths = [get_path("include"), get_path("platinclude"),]
     include_paths.extend(python_header_dirs)
-    include_paths.extend(unix_include_paths)
-    include_paths.extend(clang_include_paths)
     if include_dirs is not None:
         for dir in include_dirs:
             include_paths.append(str(dir))
