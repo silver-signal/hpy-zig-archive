@@ -76,7 +76,7 @@ if __name__ == "__main__":
         build(zig_file_name='hpy_universal', source=hpy_header, 
                 define_macros=hpy_define_macros, include_dirs=[hpy],
                 py_limited_api=True)
-        build(zig_file_name='quickstart_c', source=quickstart_c, 
+        build(zig_file_name='quickstart_c_translated', source=quickstart_c, 
                 define_macros=hpy_define_macros, include_dirs=[hpy],
                 py_limited_api=True)
 
