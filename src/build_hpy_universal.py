@@ -72,5 +72,7 @@ if __name__ == "__main__":
     hpy_devel = files(hpy.devel.include)
     with as_file(hpy_devel) as hpy:
         hpy_header = hpy / 'hpy.h'
-        build(zig_file_name='hpy_universal', source=hpy_header, define_macros=hpy_define_macros, include_dirs=[hpy])
+        build(zig_file_name='hpy_universal', source=hpy_header, 
+                define_macros=hpy_define_macros, include_dirs=[hpy],
+                py_limited_api=True)
 
