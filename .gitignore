@@ -1,3 +1,6 @@
+# ---> Project-specific
+src/hpy_universal.zig
+
 # ---> Zig
 zig-cache/
 zig-out/
