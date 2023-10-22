@@ -2,7 +2,7 @@ const std = @import("std");
 const expect = std.testing.expect;
 const mem = std.mem;
 
-const hpy = @import("hpy.zig");
+const hpy = @import("ffi.zig");
 const HPyMeth = hpy.HPyMeth;
 const HPyFunc = hpy.HPyFunc;
 const HPyCFunction = hpy.HPyCFunction;
@@ -10,6 +10,7 @@ const HPy = hpy.HPy;
 const HPyContext = hpy.HPyContext;
 const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
 const cpy_PyObject = hpy.cpy_PyObject;
+const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
 const _HPyFunc_args_NOARGS = hpy._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = hpy._HPy_CallRealFunctionFromTrampoline;
 
@@ -20,7 +21,7 @@ test "test HPyMeth assignment" {
         .name = "TestName",
         .impl = &say_hello_impl,
         .cpy_trampoline = &say_hello_trampoline,
-        .signature = HPyFunc.NOARGS,
+        .signature = HPyFunc_NOARGS,
         .doc = null,
     };
     expect(mem.eql(u8, testHPyMeth.name, "TestName"));
@@ -39,6 +40,6 @@ fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
         .self = self,
         .result = null,
     };
-    _HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines, HPyFunc.NOARGS, @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)), @ptrCast(?*anyopaque, &a));
+    _HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines, HPyFunc_NOARGS, @ptrCast(HPyCFunction, @alignCast(@import("std").meta.alignment(HPyCFunction), &say_hello_impl)), @ptrCast(?*anyopaque, &a));
     return a.result;
 }
