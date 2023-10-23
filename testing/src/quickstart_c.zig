@@ -1,4 +1,9 @@
-const ffi = @import("ffi.zig");
+//const ffi = @import("ffi.zig");
+const ffi = @cImport({
+    @cDefine("HPY", {});
+    @cDefine("HPY_ABI_UNIVERSAL", {});
+    @cInclude("hpy.h");
+});
 
 const HPyContext = ffi.HPyContext;
 const HPy = ffi.HPy;
@@ -6,7 +11,6 @@ const HPyUnicode_FromString = ffi.HPyUnicode_FromString;
 const cpy_PyObject = ffi.cpy_PyObject;
 const _HPyFunc_args_NOARGS = ffi._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = ffi._HPy_CallRealFunctionFromTrampoline;
-extern const _ctx_for_trampolines: [*c]HPyContext;
 const HPyFunc_NOARGS = ffi.HPyFunc_NOARGS;
 const HPyCFunction = ffi.HPyCFunction;
 const HPyDef = ffi.HPyDef;
@@ -15,6 +19,8 @@ const HPyDef_Kind_Meth = ffi.HPyDef_Kind_Meth;
 const HPy_ssize_t = ffi.HPy_ssize_t;
 //const union_unnamed_2 = ffi.union_unnamed_2;
 const HPyMeth = ffi.HPyMeth;
+//extern var _ctx_for_trampolines;
+var _ctx_for_trampolines: [*c]HPyContext = undefined;
 const cpy_PyCFunction = ffi.cpy_PyCFunction;
 
 pub const say_hello_impl_sig: c_int = 3;
@@ -53,23 +59,23 @@ pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
     &say_hello,
     null,
 };
-pub var quickstart_c_def: HPyModuleDef = HPyModuleDef{
+pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
     .size = @import("std").mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
     .defines = @as([*c][*c]HPyDef, @ptrCast(@alignCast(&QuickstartCMethods))),
     .globals = null,
 };
-pub export fn get_required_hpy_major_version_quickstart_c() u32 {
+pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
     return 0;
 }
-pub export fn get_required_hpy_minor_version_quickstart_c() u32 {
+pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
     return 0;
 }
-pub export fn HPyInitGlobalContext_quickstart_c(arg_ctx: [*c]HPyContext) void {
+pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: [*c]HPyContext) void {
     var ctx = arg_ctx;
     _ctx_for_trampolines = ctx;
 }
-pub export fn HPyInit_quickstart_c() [*c]HPyModuleDef {
-    return &quickstart_c_def;
+pub export fn HPyInit_quickstart_zig() [*c]HPyModuleDef {
+    return &quickstart_zig_def;
 }

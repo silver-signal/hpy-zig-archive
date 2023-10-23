@@ -7,7 +7,7 @@ INCLUDE_DIRS = [str(Path(__file__).parent.parent / 'src')]
 print(f"{INCLUDE_DIRS=}")
 
 setup(
-    name="hpy-quickstart",
+    name="quickstart",
     hpy_ext_modules=[
         Extension(
             name='quickstart_c', 
@@ -15,7 +15,12 @@ setup(
             include_dirs=INCLUDE_DIRS,
         ),
         Extension(
-            name='quickstart_c_zig',
+            name='quickstart_c_translated', 
+            sources=['src/quickstart_c_translated.zig'],
+            include_dirs=INCLUDE_DIRS,
+        ),
+        Extension(
+            name='quickstart_zig',
             sources=['src/quickstart_c.zig'],
             include_dirs=INCLUDE_DIRS,
         ),
