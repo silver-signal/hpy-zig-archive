@@ -67,13 +67,31 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .globals = null,
 };
 
-pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
+comptime {
+    //    const major_version_modname = "get_required_major_version_" ++ "quickstart_zig";
+    @export(get_required_hpy_major_version_module, .{ .name = "get_required_major_version_quickstart_zig", .linkage = .Strong });
+}
+
+comptime {
+    //    const minor_version_modname = "get_required_minor_version_" ++ "quickstart_zig";
+    @export(get_required_hpy_minor_version_module, .{ .name = "get_required_minor_version_quickstart_zig", .linkage = .Strong });
+}
+
+fn get_required_hpy_major_version_module() callconv(.C) u32 {
     return HPY_ABI_VERSION;
 }
 
-pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
+fn get_required_hpy_minor_version_module() callconv(.C) u32 {
     return HPY_ABI_VERSION_MINOR;
 }
+
+//pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
+//    return HPY_ABI_VERSION;
+//}
+//
+//pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
+//    return HPY_ABI_VERSION_MINOR;
+//}
 
 pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: ?*HPyContext) void {
     var ctx = arg_ctx;
