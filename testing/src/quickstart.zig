@@ -17,11 +17,12 @@ const HPyDef = ffi.HPyDef;
 const HPyModuleDef = ffi.HPyModuleDef;
 const HPyDef_Kind_Meth = ffi.HPyDef_Kind_Meth;
 const HPy_ssize_t = ffi.HPy_ssize_t;
-//const union_unnamed_2 = ffi.union_unnamed_2;
 const HPyMeth = ffi.HPyMeth;
-//extern var _ctx_for_trampolines;
 var _ctx_for_trampolines: [*c]HPyContext = undefined;
 const cpy_PyCFunction = ffi.cpy_PyCFunction;
+
+const HPY_ABI_VERSION = ffi.HPY_ABI_VERSION;
+const HPY_ABI_VERSION_MINOR = ffi.HPY_ABI_VERSION_MINOR;
 
 pub const say_hello_impl_sig: c_int = 3;
 const enum_unnamed_3 = c_uint;
@@ -67,10 +68,10 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .globals = null,
 };
 pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
-    return 0;
+    return HPY_ABI_VERSION;
 }
 pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
-    return 0;
+    return HPY_ABI_VERSION_MINOR;
 }
 pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: [*c]HPyContext) void {
     var ctx = arg_ctx;
