@@ -18,22 +18,19 @@ const HPyModuleDef = ffi.HPyModuleDef;
 const HPyDef_Kind_Meth = ffi.HPyDef_Kind_Meth;
 const HPy_ssize_t = ffi.HPy_ssize_t;
 const HPyMeth = ffi.HPyMeth;
-var _ctx_for_trampolines: [*c]HPyContext = undefined;
+var _ctx_for_trampolines: ?*HPyContext = undefined;
 const cpy_PyCFunction = ffi.cpy_PyCFunction;
 
 const HPY_ABI_VERSION = ffi.HPY_ABI_VERSION;
 const HPY_ABI_VERSION_MINOR = ffi.HPY_ABI_VERSION_MINOR;
 
-pub const say_hello_impl_sig: c_int = 3;
-const enum_unnamed_3 = c_uint;
-pub fn say_hello_impl(arg_ctx: [*c]HPyContext, arg_self: HPy) callconv(.C) HPy {
+pub fn say_hello_impl(arg_ctx: ?*HPyContext, arg_self: HPy) callconv(.C) HPy {
     var ctx = arg_ctx;
     var self = arg_self;
     _ = @TypeOf(self);
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
-pub const say_hello_trampoline_sig: c_int = 3;
-const enum_unnamed_4 = c_uint;
+
 pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
     var self = arg_self;
     var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
@@ -43,9 +40,9 @@ pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObjec
     _HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
+
 pub export var say_hello: HPyDef = HPyDef{
     .kind = @as(c_uint, @bitCast(HPyDef_Kind_Meth)),
-    //.unnamed_0 = union_unnamed_2{
     .unnamed_0 = .{
         .meth = HPyMeth{
             .name = "say_hello",
@@ -56,10 +53,12 @@ pub export var say_hello: HPyDef = HPyDef{
         },
     },
 };
-pub var QuickstartCMethods: [2][*c]HPyDef = [2][*c]HPyDef{
+
+pub var QuickstartCMethods: [2]?*HPyDef = [2]?*HPyDef{
     &say_hello,
     null,
 };
+
 pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
     .size = @import("std").mem.zeroes(HPy_ssize_t),
@@ -67,16 +66,20 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .defines = @as([*c][*c]HPyDef, @ptrCast(@alignCast(&QuickstartCMethods))),
     .globals = null,
 };
+
 pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
     return HPY_ABI_VERSION;
 }
+
 pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
     return HPY_ABI_VERSION_MINOR;
 }
-pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: [*c]HPyContext) void {
+
+pub export fn HPyInitGlobalContext_quickstart_zig(arg_ctx: ?*HPyContext) void {
     var ctx = arg_ctx;
     _ctx_for_trampolines = ctx;
 }
-pub export fn HPyInit_quickstart_zig() [*c]HPyModuleDef {
+
+pub export fn HPyInit_quickstart_zig() ?*HPyModuleDef {
     return &quickstart_zig_def;
 }
