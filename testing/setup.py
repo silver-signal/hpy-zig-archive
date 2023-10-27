@@ -21,14 +21,9 @@ setup(
         ),
         Extension(
             name='quickstart_zig',
-            sources=['src/quickstart_c.zig'],
+            sources=['src/quickstart.zig'],
             include_dirs=INCLUDE_DIRS,
         ),
-##        Extension(
-##            name='quickstart_zig',
-##            sources=['src/quickstart.zig'],
-##            include_dirs=INCLUDE_DIRS,
-##        ),
     ],
     cmdclass={'build_ext': BuildZigExt},
     setup_requires=['ziglang', 'setuptools-ziglang' ,'hpy'],
