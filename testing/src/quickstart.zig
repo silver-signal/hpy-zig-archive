@@ -68,17 +68,20 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
 };
 
 comptime {
-    HPyZigMODINIT();
+    HPyZig_MODINIT("quickstart_zig");
 }
 
-pub fn HPyZigMODINIT() void {
+pub fn HPyZig_MODINIT(name: []const u8) void {
+    //_ = name;
+    //    _ = module_def;
+
     comptime {
-        const major_version_modname = "get_required_hpy_major_version_" ++ "quickstart_zig";
+        const major_version_modname = "get_required_hpy_major_version_" ++ name;
         @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
     }
 
     comptime {
-        const minor_version_modname = "get_required_hpy_minor_version_" ++ "quickstart_zig";
+        const minor_version_modname = "get_required_hpy_minor_version_" ++ name;
         @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
     }
 }
