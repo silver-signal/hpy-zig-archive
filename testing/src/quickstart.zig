@@ -68,23 +68,35 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
 };
 
 comptime {
-    HPyZig_MODINIT("quickstart_zig");
+    //HPyZig_MODINIT("quickstart_zig");
+    HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
 }
 
-pub fn HPyZig_MODINIT(name: []const u8) void {
-    //_ = name;
-    //    _ = module_def;
-
+pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
     comptime {
-        const major_version_modname = "get_required_hpy_major_version_" ++ name;
+        const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
         @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
     }
 
     comptime {
-        const minor_version_modname = "get_required_hpy_minor_version_" ++ name;
+        const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
         @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
     }
+
+    comptime {
+        const S = struct {
+            pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
+                return module_def;
+            }
+        };
+        const hpyinit_modname = "HPyInit_" ++ mod_name;
+        @export(S.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
+    }
 }
+
+//pub export fn HPyInit_quickstart_zig() ?*HPyModuleDef {
+//    return &quickstart_zig_def;
+//}
 
 fn get_required_hpy_major_version_module() callconv(.C) u32 {
     return HPY_ABI_VERSION;
@@ -94,18 +106,6 @@ fn get_required_hpy_minor_version_module() callconv(.C) u32 {
     return HPY_ABI_VERSION_MINOR;
 }
 
-//pub export fn get_required_hpy_major_version_quickstart_zig() u32 {
-//    return HPY_ABI_VERSION;
-//}
-//
-//pub export fn get_required_hpy_minor_version_quickstart_zig() u32 {
-//    return HPY_ABI_VERSION_MINOR;
-//}
-
 pub export fn HPyInitGlobalContext_quickstart_zig(ctx: ?*HPyContext) void {
     _ctx_for_trampolines = ctx;
-}
-
-pub export fn HPyInit_quickstart_zig() ?*HPyModuleDef {
-    return &quickstart_zig_def;
 }
