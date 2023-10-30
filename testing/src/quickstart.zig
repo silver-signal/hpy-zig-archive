@@ -20,13 +20,8 @@ const HPy_ssize_t = ffi.HPy_ssize_t;
 const HPyMeth = ffi.HPyMeth;
 const cpy_PyCFunction = ffi.cpy_PyCFunction;
 
-const HPY_ABI_VERSION = ffi.HPY_ABI_VERSION;
-const HPY_ABI_VERSION_MINOR = ffi.HPY_ABI_VERSION_MINOR;
-
-pub fn say_hello_impl(arg_ctx: ?*HPyContext, arg_self: HPy) callconv(.C) HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
-    _ = @TypeOf(self);
+pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
+    _ = self;
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
@@ -69,12 +64,14 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
 const ctx_for_trampolines = HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
 
 pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyContext {
+
+    // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
     @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
-
     const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
     @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
 
+    // Exports the function used by HPy to get the module definition
     const S1 = struct {
         pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
             return module_def;
@@ -83,6 +80,7 @@ pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyCo
     const hpyinit_modname = "HPyInit_" ++ mod_name;
     @export(S1.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
 
+    // Exports the function used by HPy to pass a context to by used by functions
     const S2 = struct {
         pub var _ctx_for_trampolines: ?*HPyContext = null;
         pub fn HPyInitGlobalContext_module(ctx: ?*HPyContext) callconv(.C) void {
@@ -95,14 +93,10 @@ pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyCo
     return &S2._ctx_for_trampolines;
 }
 
-//pub export fn HPyInitGlobalContextOLD_quickstart_zig(ctx: ?*HPyContext) void {
-//    ctx_for_trampolines = ctx;
-//}
-
 fn get_required_hpy_major_version_module() callconv(.C) u32 {
-    return HPY_ABI_VERSION;
+    return ffi.HPY_ABI_VERSION;
 }
 
 fn get_required_hpy_minor_version_module() callconv(.C) u32 {
-    return HPY_ABI_VERSION_MINOR;
+    return ffi.HPY_ABI_VERSION_MINOR;
 }
