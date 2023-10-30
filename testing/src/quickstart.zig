@@ -18,7 +18,6 @@ const HPyModuleDef = ffi.HPyModuleDef;
 const HPyDef_Kind_Meth = ffi.HPyDef_Kind_Meth;
 const HPy_ssize_t = ffi.HPy_ssize_t;
 const HPyMeth = ffi.HPyMeth;
-var _ctx_for_trampolines: ?*HPyContext = null;
 const cpy_PyCFunction = ffi.cpy_PyCFunction;
 
 const HPY_ABI_VERSION = ffi.HPY_ABI_VERSION;
@@ -37,7 +36,7 @@ pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObjec
         .self = self,
         .result = null,
     };
-    _HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    _HPy_CallRealFunctionFromTrampoline(ctx_for_trampolines.*, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 
@@ -67,35 +66,37 @@ pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .globals = null,
 };
 
-comptime {
-    //HPyZig_MODINIT("quickstart_zig");
-    HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
+const ctx_for_trampolines = HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
+
+pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyContext {
+    const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
+    @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
+
+    const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
+    @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
+
+    const S1 = struct {
+        pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
+            return module_def;
+        }
+    };
+    const hpyinit_modname = "HPyInit_" ++ mod_name;
+    @export(S1.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
+
+    const S2 = struct {
+        pub var _ctx_for_trampolines: ?*HPyContext = null;
+        pub fn HPyInitGlobalContext_module(ctx: ?*HPyContext) callconv(.C) void {
+            _ctx_for_trampolines = ctx;
+        }
+    };
+    const hpyinitcontext_name = "HPyInitGlobalContext_" ++ mod_name;
+    @export(S2.HPyInitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
+
+    return &S2._ctx_for_trampolines;
 }
 
-pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
-    comptime {
-        const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
-        @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
-    }
-
-    comptime {
-        const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
-        @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
-    }
-
-    comptime {
-        const S = struct {
-            pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
-                return module_def;
-            }
-        };
-        const hpyinit_modname = "HPyInit_" ++ mod_name;
-        @export(S.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
-    }
-}
-
-//pub export fn HPyInit_quickstart_zig() ?*HPyModuleDef {
-//    return &quickstart_zig_def;
+//pub export fn HPyInitGlobalContextOLD_quickstart_zig(ctx: ?*HPyContext) void {
+//    ctx_for_trampolines = ctx;
 //}
 
 fn get_required_hpy_major_version_module() callconv(.C) u32 {
@@ -104,8 +105,4 @@ fn get_required_hpy_major_version_module() callconv(.C) u32 {
 
 fn get_required_hpy_minor_version_module() callconv(.C) u32 {
     return HPY_ABI_VERSION_MINOR;
-}
-
-pub export fn HPyInitGlobalContext_quickstart_zig(ctx: ?*HPyContext) void {
-    _ctx_for_trampolines = ctx;
 }
