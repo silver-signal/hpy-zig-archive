@@ -1,10 +1,6 @@
-//const ffi = @import("ffi.zig");
-const ffi = @cImport({
-    @cDefine("HPY", {});
-    @cDefine("HPY_ABI_UNIVERSAL", {});
-    @cInclude("hpy.h");
-});
+const std = @import("std");
 
+const ffi = @import("./ffi.zig");
 const HPyContext = ffi.HPyContext;
 const HPy = ffi.HPy;
 const HPyUnicode_FromString = ffi.HPyUnicode_FromString;
@@ -54,7 +50,7 @@ pub var QuickstartCMethods: [2]?*HPyDef = [2]?*HPyDef{
 
 pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
     .doc = "HPy Quickstart C Example",
-    .size = @import("std").mem.zeroes(HPy_ssize_t),
+    .size = std.mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
     .defines = @as([*c][*c]HPyDef, @ptrCast(@alignCast(&QuickstartCMethods))),
     .globals = null,
