@@ -8,6 +8,7 @@ const cpy_PyObject = ffi.cpy_PyObject;
 const _HPyFunc_args_NOARGS = ffi._HPyFunc_args_NOARGS;
 const _HPy_CallRealFunctionFromTrampoline = ffi._HPy_CallRealFunctionFromTrampoline;
 const HPyFunc_NOARGS = ffi.HPyFunc_NOARGS;
+const HPyFunc_Signature = ffi.HPyFunc_Signature;
 const HPyCFunction = ffi.HPyCFunction;
 const HPyDef = ffi.HPyDef;
 const HPyModuleDef = ffi.HPyModuleDef;
@@ -21,27 +22,38 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
+const meth_impl = *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy;
+
 comptime {
     const say_hello2 = HPyZigDef_METH(ctx_for_trampolines, "say_hello2", HPyFunc_NOARGS);
     _ = say_hello2;
 }
-pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, func_sig: ffi.HPyFunc_Signature) HPyDef {
-    _ = trampoline_context;
-    //_ = meth_name;
-    _ = func_sig;
+pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, func_sig: HPyFunc_Signature) HPyDef {
+    const S = struct {
+        pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
+            var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
+                .self = self,
+                .result = null,
+            };
+            _HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
+            return a.result;
+        }
+    };
+    _ = S;
+
     var say_hello_new: HPyDef = HPyDef{
         .kind = @as(c_uint, @bitCast(HPyDef_Kind_Meth)),
         .unnamed_0 = .{
             .meth = HPyMeth{
-                //.name = "say_hello",
                 .name = @ptrCast(meth_name),
                 .impl = @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))),
                 .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&say_hello_trampoline))),
-                .signature = @as(c_uint, @bitCast(HPyFunc_NOARGS)),
+                .signature = @as(c_uint, @bitCast(func_sig)),
                 .doc = null,
             },
         },
     };
+
     return say_hello_new;
 }
 
