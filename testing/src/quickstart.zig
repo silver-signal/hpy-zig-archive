@@ -24,10 +24,8 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
 
 const meth_impl = *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy;
 
-comptime {
-    const say_hello2 = HPyZigDef_METH(ctx_for_trampolines, "say_hello2", HPyFunc_NOARGS);
-    _ = say_hello2;
-}
+pub export var say_hello = HPyZigDef_METH(ctx_for_trampolines, "say_hello", HPyFunc_NOARGS);
+
 pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, func_sig: HPyFunc_Signature) HPyDef {
     const S = struct {
         pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
@@ -35,49 +33,26 @@ pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, 
                 .self = self,
                 .result = null,
             };
-            _HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
+            _HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
             return a.result;
         }
     };
-    _ = S;
 
-    var say_hello_new: HPyDef = HPyDef{
+    var method_definition: HPyDef = HPyDef{
         .kind = @as(c_uint, @bitCast(HPyDef_Kind_Meth)),
         .unnamed_0 = .{
             .meth = HPyMeth{
                 .name = @ptrCast(meth_name),
                 .impl = @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))),
-                .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&say_hello_trampoline))),
+                .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&S.say_hello_trampoline))),
                 .signature = @as(c_uint, @bitCast(func_sig)),
                 .doc = null,
             },
         },
     };
 
-    return say_hello_new;
+    return method_definition;
 }
-
-pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
-    var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
-        .self = self,
-        .result = null,
-    };
-    _HPy_CallRealFunctionFromTrampoline(ctx_for_trampolines.*, @as(c_uint, @bitCast(HPyFunc_NOARGS)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-
-pub export var say_hello: HPyDef = HPyDef{
-    .kind = @as(c_uint, @bitCast(HPyDef_Kind_Meth)),
-    .unnamed_0 = .{
-        .meth = HPyMeth{
-            .name = "say_hello",
-            .impl = @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))),
-            .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&say_hello_trampoline))),
-            .signature = @as(c_uint, @bitCast(HPyFunc_NOARGS)),
-            .doc = null,
-        },
-    },
-};
 
 pub var QuickstartCMethods: [2]?*HPyDef = [2]?*HPyDef{
     &say_hello,
@@ -85,16 +60,18 @@ pub var QuickstartCMethods: [2]?*HPyDef = [2]?*HPyDef{
 };
 
 pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
-    .doc = "HPy Quickstart C Example",
+    .doc = "HPy Quickstart Zig Example",
     .size = std.mem.zeroes(HPy_ssize_t),
     .legacy_methods = null,
     .defines = @as([*c][*c]HPyDef, @ptrCast(@alignCast(&QuickstartCMethods))),
     .globals = null,
 };
 
-const ctx_for_trampolines = HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
+comptime {
+    HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
+}
 
-pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyContext {
+pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
@@ -103,25 +80,28 @@ pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) *?*HPyCo
     @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
 
     // Exports the function used by HPy to get the module definition
-    const S1 = struct {
+    const S = struct {
         pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
             return module_def;
         }
     };
     const hpyinit_modname = "HPyInit_" ++ mod_name;
-    @export(S1.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
+    @export(S.HPyInit_module, .{ .name = hpyinit_modname, .linkage = .Strong });
+}
 
+const ctx_for_trampolines = HPyZig_InitGlobalContext("quickstart_zig");
+pub fn HPyZig_InitGlobalContext(mod_name: []const u8) *?*HPyContext {
     // Exports the function used by HPy to pass a context to by used by functions
-    const S2 = struct {
+    const S = struct {
         pub var _ctx_for_trampolines: ?*HPyContext = null;
         pub fn HPyInitGlobalContext_module(ctx: ?*HPyContext) callconv(.C) void {
             _ctx_for_trampolines = ctx;
         }
     };
     const hpyinitcontext_name = "HPyInitGlobalContext_" ++ mod_name;
-    @export(S2.HPyInitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
+    @export(S.HPyInitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
 
-    return &S2._ctx_for_trampolines;
+    return &S._ctx_for_trampolines;
 }
 
 fn get_required_hpy_major_version_module() callconv(.C) u32 {
