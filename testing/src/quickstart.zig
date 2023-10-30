@@ -25,8 +25,7 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
-pub fn say_hello_trampoline(arg_self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
-    var self = arg_self;
+pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
     var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
         .self = self,
         .result = null,
