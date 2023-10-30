@@ -21,6 +21,30 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
+comptime {
+    const say_hello2 = HPyZigDef_METH(ctx_for_trampolines, "say_hello2", HPyFunc_NOARGS);
+    _ = say_hello2;
+}
+pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, func_sig: ffi.HPyFunc_Signature) HPyDef {
+    _ = trampoline_context;
+    //_ = meth_name;
+    _ = func_sig;
+    var say_hello_new: HPyDef = HPyDef{
+        .kind = @as(c_uint, @bitCast(HPyDef_Kind_Meth)),
+        .unnamed_0 = .{
+            .meth = HPyMeth{
+                //.name = "say_hello",
+                .name = @ptrCast(meth_name),
+                .impl = @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))),
+                .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&say_hello_trampoline))),
+                .signature = @as(c_uint, @bitCast(HPyFunc_NOARGS)),
+                .doc = null,
+            },
+        },
+    };
+    return say_hello_new;
+}
+
 pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
     var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
         .self = self,
