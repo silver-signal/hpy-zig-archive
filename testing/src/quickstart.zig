@@ -31,14 +31,13 @@ const meth_sig = *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy;
 pub export var say_hello = HPyZigDef_METH(ctx_for_trampolines, "say_hello", say_hello_impl, HPyFunc_NOARGS);
 
 pub inline fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: HPyFunc_Signature) HPyDef {
-    _ = impl;
     const S = struct {
         pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
             var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
                 .self = self,
                 .result = null,
             };
-            _HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))), @as(?*anyopaque, @ptrCast(&a)));
+            _HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
             return a.result;
         }
     };
@@ -48,7 +47,7 @@ pub inline fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []con
         .unnamed_0 = .{
             .meth = HPyMeth{
                 .name = @ptrCast(meth_name),
-                .impl = @as(HPyCFunction, @ptrCast(@alignCast(&say_hello_impl))),
+                .impl = @as(HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(cpy_PyCFunction, @ptrCast(@alignCast(&S.say_hello_trampoline))),
                 .signature = @as(c_uint, @bitCast(func_sig)),
                 .doc = null,
