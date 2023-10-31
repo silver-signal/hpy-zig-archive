@@ -22,11 +22,16 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
-const meth_impl = *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy;
+const meth_sig2 = union(enum) {
+    HPyFunc_NOARGS: *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy,
+};
 
-pub export var say_hello = HPyZigDef_METH(ctx_for_trampolines, "say_hello", HPyFunc_NOARGS);
+const meth_sig = *const fn (ctx: ?*HPyContext, self: HPy) callconv(.C) HPy;
 
-pub fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, func_sig: HPyFunc_Signature) HPyDef {
+pub export var say_hello = HPyZigDef_METH(ctx_for_trampolines, "say_hello", say_hello_impl, HPyFunc_NOARGS);
+
+pub inline fn HPyZigDef_METH(trampoline_context: *?*HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: HPyFunc_Signature) HPyDef {
+    _ = impl;
     const S = struct {
         pub fn say_hello_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
             var a: _HPyFunc_args_NOARGS = _HPyFunc_args_NOARGS{
@@ -71,7 +76,7 @@ comptime {
     HPyZig_MODINIT("quickstart_zig", &quickstart_zig_def);
 }
 
-pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
+pub inline fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
@@ -90,7 +95,7 @@ pub fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
 }
 
 const ctx_for_trampolines = HPyZig_InitGlobalContext("quickstart_zig");
-pub fn HPyZig_InitGlobalContext(mod_name: []const u8) *?*HPyContext {
+pub inline fn HPyZig_InitGlobalContext(mod_name: []const u8) *?*HPyContext {
     // Exports the function used by HPy to pass a context to by used by functions
     const S = struct {
         pub var _ctx_for_trampolines: ?*HPyContext = null;
