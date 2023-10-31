@@ -21,9 +21,8 @@ pub fn say_hello_impl(ctx: ?*HPyContext, self: HPy) callconv(.C) HPy {
     return HPyUnicode_FromString(ctx, "Hello world!");
 }
 
-pub var QuickstartCMethods: [1:null]?*HPyDef = [1:null]?*HPyDef{
+pub var QuickstartCMethods = [1:null]?*HPyDef{
     &say_hello,
-    //null,
 };
 
 pub var quickstart_zig_def: HPyModuleDef = HPyModuleDef{
