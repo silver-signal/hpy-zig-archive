@@ -6,6 +6,7 @@ pub const HPy = ffi.HPy;
 pub const HPyGlobal = ffi.HPyGlobal;
 pub const HPyUnicode_FromString = ffi.HPyUnicode_FromString;
 pub const cpy_PyObject = ffi.cpy_PyObject;
+pub const cpy_PyMethodDef = ffi.cpy_PyMethodDef;
 pub const _HPyFunc_args_NOARGS = ffi._HPyFunc_args_NOARGS;
 pub const _HPy_CallRealFunctionFromTrampoline = ffi._HPy_CallRealFunctionFromTrampoline;
 pub const HPyFunc_NOARGS = ffi.HPyFunc_NOARGS;
