@@ -63,7 +63,15 @@ pub inline fn HPyZig_InitGlobalContext(mod_name: []const u8) *?*HPyContext {
     return &S._ctx_for_trampolines;
 }
 
-pub inline fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) void {
+pub const HPyZigModuleDef = extern struct {
+    doc: [*]const u8 = "",
+    size: HPy_ssize_t = 0,
+    legacy_methods: ?*cpy_PyMethodDef = null,
+    defines: [*:null]?*HPyDef,
+    globals: ?[*:null]?*HPyGlobal = null,
+};
+
+pub inline fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyZigModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
@@ -73,8 +81,9 @@ pub inline fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyModuleDef) v
 
     // Exports the function used by HPy to get the module definition
     const S = struct {
+        const _hpy_module_def = @as(*HPyModuleDef, @ptrCast(@constCast(module_def)));
         pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
-            return module_def;
+            return _hpy_module_def;
         }
     };
     const hpyinit_modname = "HPyInit_" ++ mod_name;
