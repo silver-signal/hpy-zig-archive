@@ -6,6 +6,7 @@ const HPy_ssize_t = hpy.HPy_ssize_t;
 const HPyDef = hpy.HPyDef;
 const HPyContext = hpy.HPyContext;
 const HPyGlobal = hpy.HPyGlobal;
+const cpy_PyMethodDef = hpy.cpy_PyMethodDef;
 const HPyFunc_NOARGS = hpy.HPyFunc_NOARGS;
 const HPyUnicode_FromString = hpy.HPyUnicode_FromString;
 
@@ -39,6 +40,7 @@ const HPyModuleDef = hpy.HPyModuleDef;
 pub const HPyZigModuleDef = extern struct {
     doc: [*]const u8 = "",
     size: HPy_ssize_t = 0,
+    legacy_methods: ?*cpy_PyMethodDef = null,
     defines: [*:null]?*HPyDef,
     globals: ?[*:null]?*HPyGlobal = null,
 };
@@ -62,18 +64,19 @@ pub inline fn HPyZig_MODINIT(mod_name: []const u8, module_def: ?*HPyZigModuleDef
     @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
 
     // Exports the function used by HPy to get the module definition
-    _ = module_def;
     const S = struct {
         var _hpy_module_def = HPyModuleDef{
             .doc = "HPy Quickstart Zig Example",
-            //.doc = module_def.doc,
             .size = std.mem.zeroes(HPy_ssize_t),
             .legacy_methods = null,
             .defines = @as([*c][*c]HPyDef, @ptrCast(@alignCast(&QuickstartCMethods))),
             .globals = null,
         };
+        //const _hpy_module_def_ptr = &_hpy_module_def;
+        // _ = module_def;
+        const _hpy_module_def_ptr = @as(*HPyModuleDef, @ptrCast(@constCast(module_def)));
         pub fn HPyInit_module() callconv(.C) ?*HPyModuleDef {
-            return &_hpy_module_def;
+            return _hpy_module_def_ptr;
         }
     };
     const hpyinit_modname = "HPyInit_" ++ mod_name;
