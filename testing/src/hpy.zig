@@ -3,6 +3,7 @@ const std = @import("std");
 pub const ffi = @import("./ffi.zig");
 pub const HPyContext = ffi.HPyContext;
 pub const HPy = ffi.HPy;
+pub const HPyGlobal = ffi.HPyGlobal;
 pub const HPyUnicode_FromString = ffi.HPyUnicode_FromString;
 pub const cpy_PyObject = ffi.cpy_PyObject;
 pub const _HPyFunc_args_NOARGS = ffi._HPyFunc_args_NOARGS;
