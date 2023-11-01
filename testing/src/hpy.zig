@@ -14,6 +14,41 @@ pub const Func_VARARGS = ffi.HPyFunc_VARARGS;
 pub const Func_KEYWORDS = ffi.HPyFunc_KEYWORDS;
 pub const Func_NOARGS = ffi.HPyFunc_NOARGS;
 pub const Func_O = ffi.HPyFunc_O;
+pub const Func_DESTROYFUNC = ffi.HPyFunc_DESTROYFUNC;
+pub const Func_GETBUFFERPROC = ffi.HPyFunc_GETBUFFERPROC;
+pub const Func_RELEASEBUFFERPROC = ffi.HPyFunc_RELEASEBUFFERPROC;
+pub const Func_UNARYFUNC = ffi.HPyFunc_UNARYFUNC;
+pub const Func_BINARYFUNC = ffi.HPyFunc_BINARYFUNC;
+pub const Func_TERNARYFUNC = ffi.HPyFunc_TERNARYFUNC;
+pub const Func_INQUIRY = ffi.HPyFunc_INQUIRY;
+pub const Func_LENFUNC = ffi.HPyFunc_LENFUNC;
+pub const Func_SSIZEARGFUNC = ffi.HPyFunc_SSIZEARGFUNC;
+pub const Func_SSIZESSIZEARGFUNC = ffi.HPyFunc_SSIZESSIZEARGFUNC;
+pub const Func_SSIZEOBJARGPROC = ffi.HPyFunc_SSIZEOBJARGPROC;
+pub const Func_SSIZESSIZEOBJARGPROC = ffi.HPyFunc_SSIZESSIZEOBJARGPROC;
+pub const Func_OBJOBJARGPROC = ffi.HPyFunc_OBJOBJARGPROC;
+pub const Func_FREEFUNC = ffi.HPyFunc_FREEFUNC;
+pub const Func_GETATTRFUNC = ffi.HPyFunc_GETATTRFUNC;
+pub const Func_GETATTROFUNC = ffi.HPyFunc_GETATTROFUNC;
+pub const Func_SETATTRFUNC = ffi.HPyFunc_SETATTRFUNC;
+pub const Func_SETATTROFUNC = ffi.HPyFunc_SETATTROFUNC;
+pub const Func_REPRFUNC = ffi.HPyFunc_REPRFUNC;
+pub const Func_HASHFUNC = ffi.HPyFunc_HASHFUNC;
+pub const Func_RICHCMPFUNC = ffi.HPyFunc_RICHCMPFUNC;
+pub const Func_GETITERFUNC = ffi.HPyFunc_GETITERFUNC;
+pub const Func_ITERNEXTFUNC = ffi.HPyFunc_ITERNEXTFUNC;
+pub const Func_DESCRGETFUNC = ffi.HPyFunc_DESCRGETFUNC;
+pub const Func_DESCRSETFUNC = ffi.HPyFunc_DESCRSETFUNC;
+pub const Func_INITPROC = ffi.HPyFunc_INITPROC;
+pub const Func_NEWFUNC = ffi.HPyFunc_NEWFUNC;
+pub const Func_GETTER = ffi.HPyFunc_GETTER;
+pub const Func_SETTER = ffi.HPyFunc_SETTER;
+pub const Func_OBJOBJPROC = ffi.HPyFunc_OBJOBJPROC;
+pub const Func_TRAVERSEPROC = ffi.HPyFunc_TRAVERSEPROC;
+pub const Func_DESTRUCTOR = ffi.HPyFunc_DESTRUCTOR;
+pub const Func_CAPSULE_DESTRUCTOR = ffi.HPyFunc_CAPSULE_DESTRUCTOR;
+pub const Func_VECTORCALLFUNC = ffi.HPyFunc_VECTORCALLFUNC;
+pub const Func_MOD_CREATE = ffi.HPyFunc_MOD_CREATE;
 pub const Func_Signature = ffi.HPyFunc_Signature;
 
 pub const CFunction = ffi.HPyCFunction;
@@ -31,7 +66,7 @@ const _HPyModuleDef = ffi.HPyModuleDef;
 pub inline fn Def_METH(trampoline_context: *?*Context, meth_name: []const u8, comptime impl: anytype, func_sig: Func_Signature) Def {
     const S = struct {
         pub fn meth_trampoline(self: ?*cpy_PyObject) callconv(.C) ?*cpy_PyObject {
-            var a: _Func_args_NOARGS = _Func_args_NOARGS{
+            var a = _Func_args_NOARGS{
                 .self = self,
                 .result = null,
             };
@@ -40,7 +75,7 @@ pub inline fn Def_METH(trampoline_context: *?*Context, meth_name: []const u8, co
         }
     };
 
-    var method_definition: Def = Def{
+    var method_definition = Def{
         .kind = @as(c_uint, @bitCast(Def_Kind_Meth)),
         .unnamed_0 = .{
             .meth = Meth{
@@ -88,9 +123,9 @@ pub inline fn MODINIT(mod_name: []const u8, module_def: ?*ModuleDef) void {
 
     // Exports the function used by HPy to get the module definition
     const S = struct {
-        const __module_def = @as(*_HPyModuleDef, @ptrCast(@constCast(module_def)));
+        const _module_def = @as(*_HPyModuleDef, @ptrCast(@constCast(module_def)));
         pub fn Init_module() callconv(.C) ?*_HPyModuleDef {
-            return __module_def;
+            return _module_def;
         }
     };
     const init_modname = "HPyInit_" ++ mod_name;
