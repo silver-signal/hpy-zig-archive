@@ -14,6 +14,16 @@ setup(
             sources=['src/quickstart.zig'],
             include_dirs=INCLUDE_DIRS,
         ),
+##        Extension(
+##            name='pof',
+##            sources=['src/pof.c'],
+##            include_dirs=INCLUDE_DIRS,
+##        ),
+        Extension(
+            name='pof_c_zig',
+            sources=['src/pof_c.zig'],
+            include_dirs=INCLUDE_DIRS,
+        ),
     ],
     cmdclass={'build_ext': BuildZigExt},
     setup_requires=['ziglang', 'setuptools-ziglang' ,'hpy'],
