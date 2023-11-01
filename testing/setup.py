@@ -10,16 +10,6 @@ setup(
     name="quickstart",
     hpy_ext_modules=[
         Extension(
-            name='quickstart_c', 
-            sources=['src/quickstart.c'],
-            include_dirs=INCLUDE_DIRS,
-        ),
-        Extension(
-            name='quickstart_c_translated', 
-            sources=['src/quickstart_c_translated.zig'],
-            include_dirs=INCLUDE_DIRS,
-        ),
-        Extension(
             name='quickstart_zig',
             sources=['src/quickstart.zig'],
             include_dirs=INCLUDE_DIRS,
