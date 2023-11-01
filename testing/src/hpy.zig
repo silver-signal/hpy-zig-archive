@@ -8,6 +8,19 @@ pub const ssize_t = ffi.HPy_ssize_t;
 pub const HPy = ffi.HPy;
 pub const Context = ffi.HPyContext;
 pub const Global = ffi.HPyGlobal;
+
+pub const Dup = ffi.HPy_Dup;
+pub const Close = ffi.HPy_Close;
+
+pub const Type_FromSpec = ffi.HPyType_FromSpec;
+pub const SetAttr_s = ffi.HPy_SetAttr_s;
+
+pub const Add = ffi.HPy_Add;
+
+pub const Arg_Parse = ffi.HPyArg_Parse;
+pub const Arg_ParseKeywords = ffi.HPyArg_ParseKeywords;
+
+pub const Long_FromLong = ffi.HPyLong_FromLong;
 pub const Unicode_FromString = ffi.HPyUnicode_FromString;
 
 pub const Func_VARARGS = ffi.HPyFunc_VARARGS;
@@ -51,16 +64,67 @@ pub const Func_VECTORCALLFUNC = ffi.HPyFunc_VECTORCALLFUNC;
 pub const Func_MOD_CREATE = ffi.HPyFunc_MOD_CREATE;
 pub const Func_Signature = ffi.HPyFunc_Signature;
 
+pub const _Func_args_VARARGS = ffi._HPyFunc_args_VARARGS;
+pub const _Func_args_KEYWORDS = ffi._HPyFunc_args_KEYWORDS;
+pub const _Func_args_NOARGS = ffi._HPyFunc_args_NOARGS;
+pub const _Func_args_O = ffi._HPyFunc_args_O;
+pub const _Func_args_DESTROYFUNC = ffi._HPyFunc_args_DESTROYFUNC;
+pub const _Func_args_GETBUFFERPROC = ffi._HPyFunc_args_GETBUFFERPROC;
+pub const _Func_args_RELEASEBUFFERPROC = ffi._HPyFunc_args_RELEASEBUFFERPROC;
+pub const _Func_args_UNARYFUNC = ffi._HPyFunc_args_UNARYFUNC;
+pub const _Func_args_BINARYFUNC = ffi._HPyFunc_args_BINARYFUNC;
+pub const _Func_args_TERNARYFUNC = ffi._HPyFunc_args_TERNARYFUNC;
+pub const _Func_args_INQUIRY = ffi._HPyFunc_args_INQUIRY;
+pub const _Func_args_LENFUNC = ffi._HPyFunc_args_LENFUNC;
+pub const _Func_args_SSIZEARGFUNC = ffi._HPyFunc_args_SSIZEARGFUNC;
+pub const _Func_args_SSIZESSIZEARGFUNC = ffi._HPyFunc_args_SSIZESSIZEARGFUNC;
+pub const _Func_args_SSIZEOBJARGPROC = ffi._HPyFunc_args_SSIZEOBJARGPROC;
+pub const _Func_args_SSIZESSIZEOBJARGPROC = ffi._HPyFunc_args_SSIZESSIZEOBJARGPROC;
+pub const _Func_args_OBJOBJARGPROC = ffi._HPyFunc_args_OBJOBJARGPROC;
+pub const _Func_args_FREEFUNC = ffi._HPyFunc_args_FREEFUNC;
+pub const _Func_args_GETATTRFUNC = ffi._HPyFunc_args_GETATTRFUNC;
+pub const _Func_args_GETATTROFUNC = ffi._HPyFunc_args_GETATTROFUNC;
+pub const _Func_args_SETATTRFUNC = ffi._HPyFunc_args_SETATTRFUNC;
+pub const _Func_args_SETATTROFUNC = ffi._HPyFunc_args_SETATTROFUNC;
+pub const _Func_args_REPRFUNC = ffi._HPyFunc_args_REPRFUNC;
+pub const _Func_args_HASHFUNC = ffi._HPyFunc_args_HASHFUNC;
+pub const _Func_args_RICHCMPFUNC = ffi._HPyFunc_args_RICHCMPFUNC;
+pub const _Func_args_GETITERFUNC = ffi._HPyFunc_args_GETITERFUNC;
+pub const _Func_args_ITERNEXTFUNC = ffi._HPyFunc_args_ITERNEXTFUNC;
+pub const _Func_args_DESCRGETFUNC = ffi._HPyFunc_args_DESCRGETFUNC;
+pub const _Func_args_DESCRSETFUNC = ffi._HPyFunc_args_DESCRSETFUNC;
+pub const _Func_args_INITPROC = ffi._HPyFunc_args_INITPROC;
+pub const _Func_args_NEWFUNC = ffi._HPyFunc_args_NEWFUNC;
+pub const _Func_args_GETTER = ffi._HPyFunc_args_GETTER;
+pub const _Func_args_SETTER = ffi._HPyFunc_args_SETTER;
+pub const _Func_args_OBJOBJPROC = ffi._HPyFunc_args_OBJOBJPROC;
+pub const _Func_args_TRAVERSEPROC = ffi._HPyFunc_args_TRAVERSEPROC;
+pub const _Func_args_DESTRUCTOR = ffi._HPyFunc_args_DESTRUCTOR;
+pub const _Func_args_CAPSULE_DESTRUCTOR = ffi._HPyFunc_args_CAPSULE_DESTRUCTOR;
+pub const _Func_args_VECTORCALLFUNC = ffi._HPyFunc_args_VECTORCALLFUNC;
+pub const _Func_args_MOD_CREATE = ffi._HPyFunc_MOD_args_CREATE;
+
 pub const CFunction = ffi.HPyCFunction;
 pub const Def = ffi.HPyDef;
 pub const Def_Kind_Meth = ffi.HPyDef_Kind_Meth;
+pub const Def_Kind_Slot = ffi.HPyDef_Kind_Slot;
 pub const Meth = ffi.HPyMeth;
+pub const Slot = ffi.HPySlot;
+pub const Type_Spec = ffi.HPyType_Spec;
+pub const Type_BuiltinShape = ffi.HPyType_BuiltinShape;
 
-const cpy_PyCFunction = ffi.cpy_PyCFunction;
-const cpy_PyObject = ffi.cpy_PyObject;
-const cpy_PyMethodDef = ffi.cpy_PyMethodDef;
-const _Func_args_NOARGS = ffi._HPyFunc_args_NOARGS;
-const _CallRealFunctionFromTrampoline = ffi._HPy_CallRealFunctionFromTrampoline;
+pub const tp_new = ffi.HPy_tp_new;
+pub const tp_repr = ffi.HPy_tp_repr;
+pub const mod_exec = ffi.HPy_mod_exec;
+
+// TODO: Make these internal
+pub const cpy_PyCFunction = ffi.cpy_PyCFunction;
+pub const cpy_PyObject = ffi.cpy_PyObject;
+pub const cpy_PyMethodDef = ffi.cpy_PyMethodDef;
+pub const _New = ffi._HPy_New;
+pub const _AsStruct_Object = ffi._HPy_AsStruct_Object;
+pub const _CallRealFunctionFromTrampoline = ffi._HPy_CallRealFunctionFromTrampoline;
+
 const _HPyModuleDef = ffi.HPyModuleDef;
 
 pub inline fn Def_METH(trampoline_context: *?*Context, meth_name: []const u8, comptime impl: anytype, func_sig: Func_Signature) Def {
