@@ -1,6 +1,11 @@
 const hpy = @import("./hpy.zig");
 const HPy = hpy.HPy;
 
+const stdio = @cImport({
+    @cInclude("stdio.h");
+});
+const snprintf = stdio.snprintf;
+
 var _ctx_for_trampolines: ?*hpy.Context = null;
 
 pub export fn HPyInitGlobalContext_pof(arg_ctx: ?*hpy.Context) void {
@@ -204,11 +209,11 @@ pub export var Point_new = hpy.Def{
 };
 pub fn Point_repr_impl(arg_ctx: ?*hpy.Context, arg_self: HPy) callconv(.C) HPy {
     var ctx = arg_ctx;
-    _ = arg_self;
-    //var self = arg_self;
-    //var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
+    //_ = arg_self;
+    var self = arg_self;
+    var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;
-    //_ = snprintf(@as([*c]u8, @ptrCast(@alignCast(&msg))), @as(c_ulong, @bitCast(@as(c_long, @as(c_int, 256)))), "Point(%g, %g)", point.*.x, point.*.y);
+    _ = snprintf(@as([*c]u8, @ptrCast(@alignCast(&msg))), @as(c_ulong, @bitCast(@as(c_long, @as(c_int, 256)))), "Point(%g, %g)", point.*.x, point.*.y);
     return hpy.Unicode_FromString(ctx, @as([*c]u8, @ptrCast(@alignCast(&msg))));
 }
 pub fn Point_repr_trampoline(arg_arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {

@@ -20,7 +20,7 @@ setup(
 ##            include_dirs=INCLUDE_DIRS,
 ##        ),
         Extension(
-            name='pof_c_zig',
+            name='pof',
             sources=['src/pof_c.zig'],
             include_dirs=INCLUDE_DIRS,
         ),
