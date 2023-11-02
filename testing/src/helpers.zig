@@ -1,30 +1,42 @@
 const hpy = @import("./hpy_cimport.zig");
 
 pub inline fn Def_METH(trampoline_context: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) hpy.HPyDef {
-    const S = struct {
-        pub fn meth_trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-            var a = hpy._HPyFunc_args_NOARGS{
-                .self = self,
-                .result = null,
+    var method_definition: hpy.HPyDef = undefined;
+
+    switch (func_sig) {
+        hpy.HPyFunc_NOARGS => {
+            const S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_NOARGS{
+                        .self = self,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
             };
-            hpy._HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
-            return a.result;
-        }
-    };
 
-    var method_definition = hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-        .unnamed_0 = .{
-            .meth = hpy.HPyMeth{
-                .name = @ptrCast(meth_name),
-                .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
-                .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.meth_trampoline))),
-                .signature = @as(c_uint, @bitCast(func_sig)),
-                .doc = null,
-            },
+            method_definition = hpy.HPyDef{
+                .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
+                .unnamed_0 = .{
+                    .meth = hpy.HPyMeth{
+                        .name = @ptrCast(meth_name),
+                        .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                        .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.meth_trampoline))),
+                        .signature = @as(c_uint, @bitCast(func_sig)),
+                        .doc = null,
+                    },
+                },
+            };
         },
-    };
-
+        else => {
+            const msg =
+                \\Helper function Def_METH received an unsupported value for the 
+                \\'func_sig' parameter.
+            ;
+            @compileError(msg);
+        },
+    }
     return method_definition;
 }
 
