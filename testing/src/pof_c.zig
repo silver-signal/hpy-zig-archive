@@ -13,16 +13,11 @@ pub fn do_nothing_impl(ctx: *hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy
     return hpy.HPy_Dup(ctx, ctx.*.h_None);
 }
 
-pub fn double_obj_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_obj: hpy.HPy) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
+pub fn double_obj_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, obj: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
-    var obj = arg_obj;
     return hpy.HPy_Add(ctx, obj, obj);
 }
-pub fn double_obj_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var self = arg_self;
-    var arg = arg_arg;
+pub fn double_obj_trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
     var a = hpy._HPyFunc_args_O{
         .self = self,
         .arg = arg,
@@ -43,12 +38,8 @@ pub export var double_obj = hpy.HPyDef{
         },
     },
 };
-pub fn add_ints_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_args: [*c]const hpy.HPy, arg_nargs: usize) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
+pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
-    var args = arg_args;
-    var nargs = arg_nargs;
     var a: c_long = undefined;
     var b: c_long = undefined;
     if (!(hpy.HPyArg_Parse(ctx, null, args, nargs, "ll", &a, &b) != 0)) return hpy.HPy{
@@ -56,10 +47,7 @@ pub fn add_ints_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_args: [*c
     };
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
-pub fn add_ints_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: [*c]const ?*hpy.cpy_PyObject, arg_nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
-    var self = arg_self;
-    var args = arg_args;
-    var nargs = arg_nargs;
+pub fn add_ints_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
     var a = hpy._HPyFunc_args_VARARGS{
         .self = self,
         .args = args,
@@ -81,13 +69,8 @@ pub export var add_ints = hpy.HPyDef{
         },
     },
 };
-pub fn add_ints_kw_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_args: [*c]const hpy.HPy, arg_nargs: usize, arg_kwnames: hpy.HPy) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
+pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
-    var args = arg_args;
-    var nargs = arg_nargs;
-    var kwnames = arg_kwnames;
     var a: c_long = undefined;
     var b: c_long = undefined;
     var kwlist: [3][*c]const u8 = [3][*c]const u8{
@@ -100,11 +83,7 @@ pub fn add_ints_kw_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_args: 
     };
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
-pub fn add_ints_kw_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: [*c]const ?*hpy.cpy_PyObject, arg_nargs: usize, arg_kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var self = arg_self;
-    var args = arg_args;
-    var nargs = arg_nargs;
-    var kwnames = arg_kwnames;
+pub fn add_ints_kw_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
     var a = hpy._HPyFunc_args_KEYWORDS{
         .self = self,
         .args = args,
@@ -131,17 +110,10 @@ pub const PointObject = extern struct {
     x: f64,
     y: f64,
 };
-pub fn PointObject_AsStruct(arg_ctx: ?*hpy.HPyContext, arg_h: hpy.HPy) callconv(.C) ?*PointObject {
-    var ctx = arg_ctx;
-    var h = arg_h;
+pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*PointObject {
     return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
 }
-pub fn Point_new_impl(arg_ctx: ?*hpy.HPyContext, arg_cls: hpy.HPy, arg_args: [*c]const hpy.HPy, arg_nargs: hpy.HPy_ssize_t, arg_kwnames: hpy.HPy) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var cls = arg_cls;
-    var args = arg_args;
-    var nargs = arg_nargs;
-    var kwnames = arg_kwnames;
+pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: [*c]const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(kwnames);
     var x: f64 = undefined;
     var y: f64 = undefined;
@@ -157,10 +129,7 @@ pub fn Point_new_impl(arg_ctx: ?*hpy.HPyContext, arg_cls: hpy.HPy, arg_args: [*c
     point.*.y = y;
     return h_point;
 }
-pub fn Point_new_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: ?*hpy.cpy_PyObject, arg_kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var self = arg_self;
-    var args = arg_args;
-    var kw = arg_kw;
+pub fn Point_new_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
     var a = hpy._HPyFunc_args_NEWFUNC{
         .self = self,
         .args = args,
@@ -180,16 +149,13 @@ pub export var Point_new = hpy.HPyDef{
         },
     },
 };
-pub fn Point_repr_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
+pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;
     _ = snprintf(@as([*c]u8, @ptrCast(@alignCast(&msg))), @as(c_ulong, @bitCast(@as(c_long, @as(c_int, 256)))), "Point(%g, %g)", point.*.x, point.*.y);
     return hpy.HPyUnicode_FromString(ctx, @as([*c]u8, @ptrCast(@alignCast(&msg))));
 }
-pub fn Point_repr_trampoline(arg_arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var arg0 = arg_arg0;
+pub fn Point_repr_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
     var a = hpy._HPyFunc_args_REPRFUNC{
         .arg0 = arg0,
         .result = null,
@@ -222,17 +188,14 @@ pub var point_type_spec = hpy.HPyType_Spec{
     .defines = @as([*c][*c]hpy.HPyDef, @ptrCast(@alignCast(&point_type_defines))),
     .doc = null,
 };
-pub fn mod_exec_impl(arg_ctx: [*c]hpy.HPyContext, arg_m: hpy.HPy) callconv(.C) c_int {
-    var ctx = arg_ctx;
-    var m = arg_m;
+pub fn mod_exec_impl(ctx: [*c]hpy.HPyContext, m: hpy.HPy) callconv(.C) c_int {
     var h_point_type: hpy.HPy = hpy.HPyType_FromSpec(ctx, &point_type_spec, null);
     if (h_point_type._i == @as(isize, @bitCast(@as(c_long, @as(c_int, 0))))) return -@as(c_int, 1);
     _ = hpy.HPy_SetAttr_s(ctx, m, "Point", h_point_type);
     hpy.HPy_Close(ctx, h_point_type);
     return 0;
 }
-pub fn mod_exec_trampoline(arg_arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
-    var arg0 = arg_arg0;
+pub fn mod_exec_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
     var a = hpy._HPyFunc_args_INQUIRY{
         .arg0 = arg0,
         .result = 0,
