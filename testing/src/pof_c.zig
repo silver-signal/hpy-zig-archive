@@ -273,7 +273,7 @@ pub export var mod_exec = hpy.ffi.HPyDef{
         .slot = hpy.ffi.HPySlot{
             .slot = @as(c_uint, @bitCast(hpy.ffi.HPy_mod_exec)),
             .impl = @as(hpy.ffi.HPyCFunction, @ptrCast(@alignCast(&mod_exec_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&mod_exec_trampoline))),
+            .cpy_trampoline = @as(hpy.ffi.cpy_PyCFunction, @ptrCast(@alignCast(&mod_exec_trampoline))),
         },
     },
 };
