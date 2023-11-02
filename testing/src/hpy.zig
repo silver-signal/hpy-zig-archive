@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub const ffi = @import("./ffi.zig");
+pub const ffi = @import("./hpy_cimport.zig");
 pub const ABI_VERSION = ffi.HPY_ABI_VERSION;
 pub const ABI_VERSION_MINOR = ffi.HPY_ABI_VERSION_MINOR;
 pub const ssize_t = ffi.HPy_ssize_t;
