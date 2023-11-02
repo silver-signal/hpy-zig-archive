@@ -5,35 +5,14 @@ const stdio = @cImport({
 });
 const snprintf = stdio.snprintf;
 
-var _ctx_for_trampolines = hpy.helpers.initGlobalContext("pof");
+const mod_ctx = hpy.helpers.initGlobalContext("pof");
 
-pub fn do_nothing_impl(arg_ctx: *hpy.HPyContext, arg_self: hpy.HPy) callconv(.C) hpy.HPy {
-    var ctx = arg_ctx;
-    var self = arg_self;
-    _ = @TypeOf(self);
+pub export var do_nothing = hpy.helpers.Def_METH(mod_ctx, "do_nothing", do_nothing_impl, hpy.HPyFunc_NOARGS);
+pub fn do_nothing_impl(ctx: *hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
+    _ = self;
     return hpy.HPy_Dup(ctx, ctx.*.h_None);
 }
-pub fn do_nothing_trampoline(arg_self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var self = arg_self;
-    var a = hpy._HPyFunc_args_NOARGS{
-        .self = self,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_NOARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&do_nothing_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var do_nothing = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-    .unnamed_0 = .{
-        .meth = hpy.HPyMeth{
-            .name = "do_nothing",
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&do_nothing_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&do_nothing_trampoline))),
-            .signature = @as(c_uint, @bitCast(hpy.HPyFunc_NOARGS)),
-            .doc = null,
-        },
-    },
-};
+
 pub fn double_obj_impl(arg_ctx: ?*hpy.HPyContext, arg_self: hpy.HPy, arg_obj: hpy.HPy) callconv(.C) hpy.HPy {
     var ctx = arg_ctx;
     var self = arg_self;
@@ -49,7 +28,7 @@ pub fn double_obj_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_arg: ?*hpy.cpy_Py
         .arg = arg,
         .result = null,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&double_obj_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&double_obj_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var double_obj = hpy.HPyDef{
@@ -87,7 +66,7 @@ pub fn add_ints_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: [*c]const ?*h
         .nargs = nargs,
         .result = null,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var add_ints = hpy.HPyDef{
@@ -133,7 +112,7 @@ pub fn add_ints_kw_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: [*c]const 
         .kwnames = kwnames,
         .result = null,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_kw_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_kw_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var add_ints_kw = hpy.HPyDef{
@@ -188,7 +167,7 @@ pub fn Point_new_trampoline(arg_self: ?*hpy.cpy_PyObject, arg_args: ?*hpy.cpy_Py
         .kw = kw,
         .result = null,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var Point_new = hpy.HPyDef{
@@ -215,7 +194,7 @@ pub fn Point_repr_trampoline(arg_arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cp
         .arg0 = arg0,
         .result = null,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var Point_repr = hpy.HPyDef{
@@ -258,7 +237,7 @@ pub fn mod_exec_trampoline(arg_arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
         .arg0 = arg0,
         .result = 0,
     };
-    hpy._HPy_CallRealFunctionFromTrampoline(_ctx_for_trampolines.*, @as(c_uint, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&mod_exec_impl))), @as(?*anyopaque, @ptrCast(&a)));
+    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&mod_exec_impl))), @as(?*anyopaque, @ptrCast(&a)));
     return a.result;
 }
 pub export var mod_exec = hpy.HPyDef{
@@ -277,17 +256,9 @@ pub var module_defines = [_:null]?*hpy.HPyDef{
     &add_ints,
     &add_ints_kw,
     &mod_exec,
-    null,
-};
-pub var moduledef = hpy.HPyModuleDef{
-    .doc = "HPy Proof of Concept",
-    .size = @as(hpy.HPy_ssize_t, @bitCast(@as(c_long, @as(c_int, 0)))),
-    .legacy_methods = null,
-    .defines = @as([*c][*c]hpy.HPyDef, @ptrCast(@alignCast(&module_defines))),
-    .globals = null,
 };
 
-pub var pofdef = hpy.helpers.ModuleDef{
+var pofdef = hpy.helpers.ModuleDef{
     .doc = "HPy Proof of Concept",
     .defines = &module_defines,
 };
