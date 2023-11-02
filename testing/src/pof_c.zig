@@ -7,12 +7,6 @@ const snprintf = stdio.snprintf;
 
 var _ctx_for_trampolines = hpy.helpers.initGlobalContext("pof");
 
-//var _ctx_for_trampolines: ?*hpy.HPyContext = null;
-//pub export fn HPyInitGlobalContext_pof(arg_ctx: ?*hpy.HPyContext) void {
-//    var ctx = arg_ctx;
-//    _ctx_for_trampolines = ctx;
-//}
-
 pub fn do_nothing_impl(arg_ctx: *hpy.HPyContext, arg_self: hpy.HPy) callconv(.C) hpy.HPy {
     var ctx = arg_ctx;
     var self = arg_self;
@@ -292,12 +286,12 @@ pub var moduledef = hpy.HPyModuleDef{
     .defines = @as([*c][*c]hpy.HPyDef, @ptrCast(@alignCast(&module_defines))),
     .globals = null,
 };
-pub export fn get_required_hpy_major_version_pof() u32 {
-    return 0;
-}
-pub export fn get_required_hpy_minor_version_pof() u32 {
-    return 0;
-}
-pub export fn HPyInit_pof() [*c]hpy.HPyModuleDef {
-    return &moduledef;
+
+pub var pofdef = hpy.helpers.ModuleDef{
+    .doc = "HPy Proof of Concept",
+    .defines = &module_defines,
+};
+
+comptime {
+    hpy.helpers.MODINIT("pof", &pofdef);
 }
