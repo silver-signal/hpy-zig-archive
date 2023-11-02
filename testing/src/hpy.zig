@@ -1,14 +1,14 @@
 const std = @import("std");
 
 pub const ffi = @import("./hpy_cimport.zig");
-
+//pub usingnamespace @import("./hpy_cimport.zig");
 pub usingnamespace @import("./helper_functions.zig");
 
 pub const ABI_VERSION = ffi.HPY_ABI_VERSION;
 pub const ABI_VERSION_MINOR = ffi.HPY_ABI_VERSION_MINOR;
 pub const ssize_t = ffi.HPy_ssize_t;
 
-pub const HPy = ffi.HPy;
+//pub const HPy = ffi.HPy;
 pub const Context = ffi.HPyContext;
 pub const Global = ffi.HPyGlobal;
 
