@@ -19,6 +19,7 @@ pub fn double_obj_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, obj: hpy.HPy) callc
     return hpy.HPy_Add(ctx, obj, obj);
 }
 
+pub export var add_ints = hpy.helpers.Def_METH(mod_ctx, "add_ints", add_ints_impl, hpy.HPyFunc_VARARGS);
 pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
@@ -28,28 +29,8 @@ pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.H
     };
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
-pub fn add_ints_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
-    var a = hpy._HPyFunc_args_VARARGS{
-        .self = self,
-        .args = args,
-        .nargs = nargs,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var add_ints = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-    .unnamed_0 = .{
-        .meth = hpy.HPyMeth{
-            .name = "add_ints",
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&add_ints_trampoline))),
-            .signature = @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)),
-            .doc = null,
-        },
-    },
-};
+
+pub export var add_ints_kw = hpy.helpers.Def_METH(mod_ctx, "add_int_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
 pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
@@ -64,29 +45,7 @@ pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hp
     };
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
-pub fn add_ints_kw_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var a = hpy._HPyFunc_args_KEYWORDS{
-        .self = self,
-        .args = args,
-        .nargsf = nargs,
-        .kwnames = kwnames,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_kw_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var add_ints_kw = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-    .unnamed_0 = .{
-        .meth = hpy.HPyMeth{
-            .name = "add_ints_kw",
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&add_ints_kw_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&add_ints_kw_trampoline))),
-            .signature = @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)),
-            .doc = null,
-        },
-    },
-};
+
 pub const PointObject = extern struct {
     x: f64,
     y: f64,

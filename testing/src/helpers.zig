@@ -1,24 +1,68 @@
+//! A collection of helper functions to help with writing Python modules in zig. They are not
+//! strictly necessary, but they greatly reduce boilerplate code. Mainly used to replace
+//! untranslatable HPy C macros such as the macro functions in hpydef.h.
+
 const hpy = @import("./hpy_cimport.zig");
 
-pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) hpy.HPyDef {
-    var method_definition: hpy.HPyDef = undefined;
+// TODO: Is it possible to pass a HPySlot_Slot value instead of a string? Using a string
+// works just as well, but it'd be nice to track closer to the original macro usage.
+/// Module slot definition helper. Intended to replace the "HPyDef_SLOT" macro.
+pub inline fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: []const u8) hpy.HPyDef {
+    const slot_func_sig = "_HPySlot_SIG__" ++ slot;
+    var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
+
+    var slot_definition = hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
+        .unnamed_0 = .{
+            .slot = hpy.HPySlot{
+                .slot = @as(c_uint, @bitCast(slot)),
+                .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
+            },
+        },
+    };
+    return slot_definition;
+}
+
+/// Used for defining a module method. Intended to replace the "HPyDef_METH" macro.
+pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, sig: hpy.HPyFunc_Signature) hpy.HPyDef {
+    var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
+
+    var method_definition = hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
+        .unnamed_0 = .{
+            .meth = hpy.HPyMeth{
+                .name = @ptrCast(meth_name),
+                .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
+                .signature = @as(c_uint, @bitCast(sig)),
+                .doc = null,
+            },
+        },
+    };
+    return method_definition;
+}
+
+/// Emit a CPython-compatible trampoline which calls IMPL, where IMPL has the signature SIG.
+/// Used to replace the HPy macro "HPyFunc_TRAMPOLINE".
+fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
     var S = struct {};
-    switch (func_sig) {
+    switch (sig) {
         hpy.HPyFunc_NOARGS => {
             S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_NOARGS{
                         .self = self,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
         },
         hpy.HPyFunc_VARARGS => {
             S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_VARARGS{
                         .self = self,
                         .args = args,
@@ -32,7 +76,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
         },
         hpy.HPyFunc_KEYWORDS => {
             S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_KEYWORDS{
                         .self = self,
                         .args = args,
@@ -47,7 +91,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
         },
         hpy.HPyFunc_O => {
             S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_O{
                         .self = self,
                         .arg = arg,
@@ -101,7 +145,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
         },
         hpy.HPyFunc_REPRFUNC => {
             S = struct {
-                pub fn meth_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_REPRFUNC{
                         .arg0 = arg0,
                         .result = null,
@@ -126,7 +170,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
         },
         hpy.HPyFunc_NEWFUNC => {
             S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_NEWFUNC{
                         .self = self,
                         .args = args,
@@ -138,89 +182,6 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
                 }
             };
         },
-        hpy.HPyFunc_GETTER,
-        hpy.HPyFunc_SETTER,
-        hpy.HPyFunc_OBJOBJPROC,
-        hpy.HPyFunc_TRAVERSEPROC,
-        hpy.HPyFunc_DESTRUCTOR,
-        hpy.HPyFunc_CAPSULE_DESTRUCTOR,
-        hpy.HPyFunc_VECTORCALLFUNC,
-        hpy.HPyFunc_MOD_CREATE,
-        => {
-            const msg =
-                \\This HPy method has not been implemented yet.
-            ;
-            @compileError(msg);
-        },
-        else => {
-            const msg =
-                \\Helper function Def_METH received an unsupported value for the 
-                \\'func_sig' parameter.
-            ;
-            @compileError(msg);
-        },
-    }
-
-    method_definition = hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-        .unnamed_0 = .{
-            .meth = hpy.HPyMeth{
-                .name = @ptrCast(meth_name),
-                .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
-                .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.meth_trampoline))),
-                .signature = @as(c_uint, @bitCast(func_sig)),
-                .doc = null,
-            },
-        },
-    };
-    return method_definition;
-}
-
-fn getMethodTrampoline(mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) type {
-    var S = struct {};
-    switch (func_sig) {
-        hpy.HPyFunc_NOARGS => {
-            S = struct {
-                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-                    var a = hpy._HPyFunc_args_NOARGS{
-                        .self = self,
-                        .result = null,
-                    };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
-                    return a.result;
-                }
-            };
-        },
-        hpy.HPyFunc_VARARGS,
-        hpy.HPyFunc_KEYWORDS,
-        hpy.HPyFunc_O,
-        hpy.HPyFunc_DESTROYFUNC,
-        hpy.HPyFunc_GETBUFFERPROC,
-        hpy.HPyFunc_RELEASEBUFFERPROC,
-        hpy.HPyFunc_UNARYFUNC,
-        hpy.HPyFunc_BINARYFUNC,
-        hpy.HPyFunc_TERNARYFUNC,
-        hpy.HPyFunc_INQUIRY,
-        hpy.HPyFunc_LENFUNC,
-        hpy.HPyFunc_SSIZEARGFUNC,
-        hpy.HPyFunc_SSIZESSIZEARGFUNC,
-        hpy.HPyFunc_SSIZEOBJARGPROC,
-        hpy.HPyFunc_SSIZESSIZEOBJARGPROC,
-        hpy.HPyFunc_OBJOBJARGPROC,
-        hpy.HPyFunc_FREEFUNC,
-        hpy.HPyFunc_GETATTRFUNC,
-        hpy.HPyFunc_GETATTROFUNC,
-        hpy.HPyFunc_SETATTRFUNC,
-        hpy.HPyFunc_SETATTROFUNC,
-        hpy.HPyFunc_REPRFUNC,
-        hpy.HPyFunc_HASHFUNC,
-        hpy.HPyFunc_RICHCMPFUNC,
-        hpy.HPyFunc_GETITERFUNC,
-        hpy.HPyFunc_ITERNEXTFUNC,
-        hpy.HPyFunc_DESCRGETFUNC,
-        hpy.HPyFunc_DESCRSETFUNC,
-        hpy.HPyFunc_INITPROC,
-        hpy.HPyFunc_NEWFUNC,
         hpy.HPyFunc_GETTER,
         hpy.HPyFunc_SETTER,
         hpy.HPyFunc_OBJOBJPROC,
