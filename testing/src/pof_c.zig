@@ -13,31 +13,12 @@ pub fn do_nothing_impl(ctx: *hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy
     return hpy.HPy_Dup(ctx, ctx.*.h_None);
 }
 
+pub export var double_obj = hpy.helpers.Def_METH(mod_ctx, "double", double_obj_impl, hpy.HPyFunc_O);
 pub fn double_obj_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, obj: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     return hpy.HPy_Add(ctx, obj, obj);
 }
-pub fn double_obj_trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var a = hpy._HPyFunc_args_O{
-        .self = self,
-        .arg = arg,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&double_obj_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var double_obj = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
-    .unnamed_0 = .{
-        .meth = hpy.HPyMeth{
-            .name = "double",
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&double_obj_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&double_obj_trampoline))),
-            .signature = @as(c_uint, @bitCast(hpy.HPyFunc_O)),
-            .doc = null,
-        },
-    },
-};
+
 pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
@@ -173,7 +154,7 @@ pub export var Point_repr = hpy.HPyDef{
         },
     },
 };
-pub var point_type_defines = [3][*c]hpy.HPyDef{
+pub var point_type_defines = [_:null]?*hpy.HPyDef{
     &Point_new,
     &Point_repr,
     null,
@@ -213,6 +194,7 @@ pub export var mod_exec = hpy.HPyDef{
         },
     },
 };
+
 pub var module_defines = [_:null]?*hpy.HPyDef{
     &do_nothing,
     &double_obj,
