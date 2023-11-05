@@ -1,6 +1,6 @@
 const hpy = @import("./hpy_cimport.zig");
 
-pub inline fn Def_METH(trampoline_context: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) hpy.HPyDef {
+pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) hpy.HPyDef {
     var method_definition: hpy.HPyDef = undefined;
     var S = struct {};
     switch (func_sig) {
@@ -11,10 +11,146 @@ pub inline fn Def_METH(trampoline_context: *?*hpy.HPyContext, meth_name: []const
                         .self = self,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(trampoline_context.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
+        },
+        hpy.HPyFunc_VARARGS => {
+            S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_VARARGS{
+                        .self = self,
+                        .args = args,
+                        .nargs = nargs,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_KEYWORDS => {
+            S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_KEYWORDS{
+                        .self = self,
+                        .args = args,
+                        .nargsf = nargs,
+                        .kwnames = kwnames,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_O => {
+            S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_O{
+                        .self = self,
+                        .arg = arg,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_DESTROYFUNC,
+        hpy.HPyFunc_GETBUFFERPROC,
+        hpy.HPyFunc_RELEASEBUFFERPROC,
+        hpy.HPyFunc_UNARYFUNC,
+        hpy.HPyFunc_BINARYFUNC,
+        hpy.HPyFunc_TERNARYFUNC,
+        => {
+            const msg =
+                \\This HPy method has not been implemented yet.
+            ;
+            @compileError(msg);
+        },
+        hpy.HPyFunc_INQUIRY => {
+            S = struct {
+                pub fn mod_exec_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_INQUIRY{
+                        .arg0 = arg0,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_LENFUNC,
+        hpy.HPyFunc_SSIZEARGFUNC,
+        hpy.HPyFunc_SSIZESSIZEARGFUNC,
+        hpy.HPyFunc_SSIZEOBJARGPROC,
+        hpy.HPyFunc_SSIZESSIZEOBJARGPROC,
+        hpy.HPyFunc_OBJOBJARGPROC,
+        hpy.HPyFunc_FREEFUNC,
+        hpy.HPyFunc_GETATTRFUNC,
+        hpy.HPyFunc_GETATTROFUNC,
+        hpy.HPyFunc_SETATTRFUNC,
+        hpy.HPyFunc_SETATTROFUNC,
+        => {
+            const msg =
+                \\This HPy method has not been implemented yet.
+            ;
+            @compileError(msg);
+        },
+        hpy.HPyFunc_REPRFUNC => {
+            S = struct {
+                pub fn meth_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_REPRFUNC{
+                        .arg0 = arg0,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_HASHFUNC,
+        hpy.HPyFunc_RICHCMPFUNC,
+        hpy.HPyFunc_GETITERFUNC,
+        hpy.HPyFunc_ITERNEXTFUNC,
+        hpy.HPyFunc_DESCRGETFUNC,
+        hpy.HPyFunc_DESCRSETFUNC,
+        hpy.HPyFunc_INITPROC,
+        => {
+            const msg =
+                \\This HPy method has not been implemented yet.
+            ;
+            @compileError(msg);
+        },
+        hpy.HPyFunc_NEWFUNC => {
+            S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_NEWFUNC{
+                        .self = self,
+                        .args = args,
+                        .kw = kw,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_GETTER,
+        hpy.HPyFunc_SETTER,
+        hpy.HPyFunc_OBJOBJPROC,
+        hpy.HPyFunc_TRAVERSEPROC,
+        hpy.HPyFunc_DESTRUCTOR,
+        hpy.HPyFunc_CAPSULE_DESTRUCTOR,
+        hpy.HPyFunc_VECTORCALLFUNC,
+        hpy.HPyFunc_MOD_CREATE,
+        => {
+            const msg =
+                \\This HPy method has not been implemented yet.
+            ;
+            @compileError(msg);
         },
         else => {
             const msg =
@@ -38,6 +174,76 @@ pub inline fn Def_METH(trampoline_context: *?*hpy.HPyContext, meth_name: []const
         },
     };
     return method_definition;
+}
+
+fn getMethodTrampoline(mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, func_sig: hpy.HPyFunc_Signature) type {
+    var S = struct {};
+    switch (func_sig) {
+        hpy.HPyFunc_NOARGS => {
+            S = struct {
+                pub fn meth_trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_NOARGS{
+                        .self = self,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(func_sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_VARARGS,
+        hpy.HPyFunc_KEYWORDS,
+        hpy.HPyFunc_O,
+        hpy.HPyFunc_DESTROYFUNC,
+        hpy.HPyFunc_GETBUFFERPROC,
+        hpy.HPyFunc_RELEASEBUFFERPROC,
+        hpy.HPyFunc_UNARYFUNC,
+        hpy.HPyFunc_BINARYFUNC,
+        hpy.HPyFunc_TERNARYFUNC,
+        hpy.HPyFunc_INQUIRY,
+        hpy.HPyFunc_LENFUNC,
+        hpy.HPyFunc_SSIZEARGFUNC,
+        hpy.HPyFunc_SSIZESSIZEARGFUNC,
+        hpy.HPyFunc_SSIZEOBJARGPROC,
+        hpy.HPyFunc_SSIZESSIZEOBJARGPROC,
+        hpy.HPyFunc_OBJOBJARGPROC,
+        hpy.HPyFunc_FREEFUNC,
+        hpy.HPyFunc_GETATTRFUNC,
+        hpy.HPyFunc_GETATTROFUNC,
+        hpy.HPyFunc_SETATTRFUNC,
+        hpy.HPyFunc_SETATTROFUNC,
+        hpy.HPyFunc_REPRFUNC,
+        hpy.HPyFunc_HASHFUNC,
+        hpy.HPyFunc_RICHCMPFUNC,
+        hpy.HPyFunc_GETITERFUNC,
+        hpy.HPyFunc_ITERNEXTFUNC,
+        hpy.HPyFunc_DESCRGETFUNC,
+        hpy.HPyFunc_DESCRSETFUNC,
+        hpy.HPyFunc_INITPROC,
+        hpy.HPyFunc_NEWFUNC,
+        hpy.HPyFunc_GETTER,
+        hpy.HPyFunc_SETTER,
+        hpy.HPyFunc_OBJOBJPROC,
+        hpy.HPyFunc_TRAVERSEPROC,
+        hpy.HPyFunc_DESTRUCTOR,
+        hpy.HPyFunc_CAPSULE_DESTRUCTOR,
+        hpy.HPyFunc_VECTORCALLFUNC,
+        hpy.HPyFunc_MOD_CREATE,
+        => {
+            const msg =
+                \\This HPy method has not been implemented yet.
+            ;
+            @compileError(msg);
+        },
+        else => {
+            const msg =
+                \\Helper function Def_METH received an unsupported value for the 
+                \\'func_sig' parameter.
+            ;
+            @compileError(msg);
+        },
+    }
+    return S;
 }
 
 pub inline fn initGlobalContext(mod_name: []const u8) *?*hpy.HPyContext {
