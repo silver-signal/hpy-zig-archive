@@ -79,24 +79,6 @@ pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HP
     _ = snprintf(@as([*c]u8, @ptrCast(@alignCast(&msg))), @as(c_ulong, @bitCast(@as(c_long, @as(c_int, 256)))), "Point(%g, %g)", point.*.x, point.*.y);
     return hpy.HPyUnicode_FromString(ctx, @as([*c]u8, @ptrCast(@alignCast(&msg))));
 }
-//pub fn Point_repr_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-//    var a = hpy._HPyFunc_args_REPRFUNC{
-//        .arg0 = arg0,
-//        .result = null,
-//    };
-//    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))), @as(?*anyopaque, @ptrCast(&a)));
-//    return a.result;
-//}
-//pub export var Point_repr = hpy.HPyDef{
-//    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
-//    .unnamed_0 = .{
-//        .slot = hpy.HPySlot{
-//            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_repr)),
-//            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))),
-//            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_repr_trampoline))),
-//        },
-//    },
-//};
 
 pub var point_type_defines = [_:null]?*hpy.HPyDef{
     &Point_new,
@@ -113,6 +95,8 @@ pub var point_type_spec = hpy.HPyType_Spec{
     .defines = @as([*c][*c]hpy.HPyDef, @ptrCast(@alignCast(&point_type_defines))),
     .doc = null,
 };
+
+pub export var mod_exec = hpy.helpers.Def_SLOT(mod_ctx, mod_exec_impl, "HPy_mod_exec");
 pub fn mod_exec_impl(ctx: [*c]hpy.HPyContext, m: hpy.HPy) callconv(.C) c_int {
     var h_point_type: hpy.HPy = hpy.HPyType_FromSpec(ctx, &point_type_spec, null);
     if (h_point_type._i == @as(isize, @bitCast(@as(c_long, @as(c_int, 0))))) return -@as(c_int, 1);
@@ -120,24 +104,6 @@ pub fn mod_exec_impl(ctx: [*c]hpy.HPyContext, m: hpy.HPy) callconv(.C) c_int {
     hpy.HPy_Close(ctx, h_point_type);
     return 0;
 }
-pub fn mod_exec_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
-    var a = hpy._HPyFunc_args_INQUIRY{
-        .arg0 = arg0,
-        .result = 0,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&mod_exec_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var mod_exec = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
-    .unnamed_0 = .{
-        .slot = hpy.HPySlot{
-            .slot = @as(c_uint, @bitCast(hpy.HPy_mod_exec)),
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&mod_exec_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&mod_exec_trampoline))),
-        },
-    },
-};
 
 pub var module_defines = [_:null]?*hpy.HPyDef{
     &do_nothing,

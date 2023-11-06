@@ -117,7 +117,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         hpy.HPyFunc_INQUIRY => {
             S = struct {
-                pub fn mod_exec_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
                     var a = hpy._HPyFunc_args_INQUIRY{
                         .arg0 = arg0,
                         .result = 0,
