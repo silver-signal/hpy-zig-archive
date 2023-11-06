@@ -72,30 +72,32 @@ pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy,
     return h_point;
 }
 
+pub export var Point_repr = hpy.helpers.Def_SLOT(mod_ctx, Point_repr_impl, "HPy_tp_repr");
 pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;
     _ = snprintf(@as([*c]u8, @ptrCast(@alignCast(&msg))), @as(c_ulong, @bitCast(@as(c_long, @as(c_int, 256)))), "Point(%g, %g)", point.*.x, point.*.y);
     return hpy.HPyUnicode_FromString(ctx, @as([*c]u8, @ptrCast(@alignCast(&msg))));
 }
-pub fn Point_repr_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var a = hpy._HPyFunc_args_REPRFUNC{
-        .arg0 = arg0,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var Point_repr = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
-    .unnamed_0 = .{
-        .slot = hpy.HPySlot{
-            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_repr)),
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_repr_trampoline))),
-        },
-    },
-};
+//pub fn Point_repr_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+//    var a = hpy._HPyFunc_args_REPRFUNC{
+//        .arg0 = arg0,
+//        .result = null,
+//    };
+//    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))), @as(?*anyopaque, @ptrCast(&a)));
+//    return a.result;
+//}
+//pub export var Point_repr = hpy.HPyDef{
+//    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
+//    .unnamed_0 = .{
+//        .slot = hpy.HPySlot{
+//            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_repr)),
+//            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_repr_impl))),
+//            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_repr_trampoline))),
+//        },
+//    },
+//};
+
 pub var point_type_defines = [_:null]?*hpy.HPyDef{
     &Point_new,
     &Point_repr,
