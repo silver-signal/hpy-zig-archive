@@ -30,7 +30,7 @@ pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy,
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
 
-pub export var add_ints_kw = hpy.helpers.Def_METH(mod_ctx, "add_int_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
+pub export var add_ints_kw = hpy.helpers.Def_METH(mod_ctx, "add_ints_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
 pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
