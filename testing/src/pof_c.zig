@@ -20,7 +20,7 @@ pub fn double_obj_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, obj: hpy.HPy) callc
 }
 
 pub export var add_ints = hpy.helpers.Def_METH(mod_ctx, "add_ints", add_ints_impl, hpy.HPyFunc_VARARGS);
-pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
+pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
     var b: c_long = undefined;
@@ -31,7 +31,7 @@ pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.H
 }
 
 pub export var add_ints_kw = hpy.helpers.Def_METH(mod_ctx, "add_int_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
-pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: [*c]const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
+pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
     var b: c_long = undefined;
@@ -55,7 +55,7 @@ pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*Po
 }
 
 pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, "HPy_tp_new");
-pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: [*c]const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
+pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(kwnames);
     var x: f64 = undefined;
     var y: f64 = undefined;
