@@ -7,7 +7,7 @@ const hpy = @import("./hpy_cimport.zig");
 // TODO: Is it possible to pass a HPySlot_Slot value instead of a string? Using a string
 // works just as well, but it'd be nice to track closer to the original macro usage.
 /// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
-pub inline fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: []const u8) hpy.HPyDef {
+pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: []const u8) hpy.HPyDef {
     const slot_func_sig = "_HPySlot_SIG__" ++ slot;
     var S = Func_TRAMPOLINE(mod_ctx, impl, @field(hpy, slot_func_sig));
 
@@ -26,7 +26,7 @@ pub inline fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
 }
 
 /// Used for defining a module method. Replaces the "HPyDef_METH" macro.
-pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, sig: hpy.HPyFunc_Signature) hpy.HPyDef {
+pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime meth_name: []const u8, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) hpy.HPyDef {
     var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
 
     var method_definition = hpy.HPyDef{
@@ -46,7 +46,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
 
 /// Emit a CPython-compatible trampoline which calls IMPL, where IMPL has the signature SIG.
 /// Replaces the HPy macro "HPyFunc_TRAMPOLINE".
-fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
+pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
     var S = struct {};
     switch (sig) {
         hpy.HPyFunc_NOARGS => {
@@ -208,7 +208,7 @@ fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, 
     return S;
 }
 
-pub inline fn initGlobalContext(mod_name: []const u8) *?*hpy.HPyContext {
+pub fn initGlobalContext(comptime mod_name: []const u8) *?*hpy.HPyContext {
     // Exports the function used by HPy to pass a context to by used by functions
     const S = struct {
         pub var _ctx_for_trampolines: ?*hpy.HPyContext = null;
@@ -230,7 +230,7 @@ pub const ModuleDef = extern struct {
     globals: ?[*:null]?*hpy.HPyGlobal = null,
 };
 
-pub inline fn MODINIT(mod_name: []const u8, module_def: ?*ModuleDef) void {
+pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*ModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
