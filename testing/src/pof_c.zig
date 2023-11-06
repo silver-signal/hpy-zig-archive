@@ -53,6 +53,8 @@ pub const PointObject = extern struct {
 pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*PointObject {
     return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
 }
+
+pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, "HPy_tp_new");
 pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: [*c]const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(kwnames);
     var x: f64 = undefined;
@@ -69,26 +71,27 @@ pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: [*c]const hpy.H
     point.*.y = y;
     return h_point;
 }
-pub fn Point_new_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-    var a = hpy._HPyFunc_args_NEWFUNC{
-        .self = self,
-        .args = args,
-        .kw = kw,
-        .result = null,
-    };
-    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))), @as(?*anyopaque, @ptrCast(&a)));
-    return a.result;
-}
-pub export var Point_new = hpy.HPyDef{
-    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
-    .unnamed_0 = .{
-        .slot = hpy.HPySlot{
-            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_new)),
-            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))),
-            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_new_trampoline))),
-        },
-    },
-};
+//pub fn Point_new_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+//    var a = hpy._HPyFunc_args_NEWFUNC{
+//        .self = self,
+//        .args = args,
+//        .kw = kw,
+//        .result = null,
+//    };
+//    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))), @as(?*anyopaque, @ptrCast(&a)));
+//    return a.result;
+//}
+//pub export var Point_new = hpy.HPyDef{
+//    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
+//    .unnamed_0 = .{
+//        .slot = hpy.HPySlot{
+//            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_new)),
+//            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))),
+//            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_new_trampoline))),
+//        },
+//    },
+//};
+
 pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;

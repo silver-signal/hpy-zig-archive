@@ -6,16 +6,17 @@ const hpy = @import("./hpy_cimport.zig");
 
 // TODO: Is it possible to pass a HPySlot_Slot value instead of a string? Using a string
 // works just as well, but it'd be nice to track closer to the original macro usage.
-/// Module slot definition helper. Intended to replace the "HPyDef_SLOT" macro.
+/// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
 pub inline fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: []const u8) hpy.HPyDef {
     const slot_func_sig = "_HPySlot_SIG__" ++ slot;
-    var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
+    var S = Func_TRAMPOLINE(mod_ctx, impl, @field(hpy, slot_func_sig));
 
+    var slot_enum = @field(hpy, slot);
     var slot_definition = hpy.HPyDef{
         .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
         .unnamed_0 = .{
             .slot = hpy.HPySlot{
-                .slot = @as(c_uint, @bitCast(slot)),
+                .slot = @as(c_uint, @bitCast(slot_enum)),
                 .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
             },
@@ -24,7 +25,7 @@ pub inline fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
     return slot_definition;
 }
 
-/// Used for defining a module method. Intended to replace the "HPyDef_METH" macro.
+/// Used for defining a module method. Replaces the "HPyDef_METH" macro.
 pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, comptime impl: anytype, sig: hpy.HPyFunc_Signature) hpy.HPyDef {
     var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
 
@@ -44,7 +45,7 @@ pub inline fn Def_METH(mod_ctx: *?*hpy.HPyContext, meth_name: []const u8, compti
 }
 
 /// Emit a CPython-compatible trampoline which calls IMPL, where IMPL has the signature SIG.
-/// Used to replace the HPy macro "HPyFunc_TRAMPOLINE".
+/// Replaces the HPy macro "HPyFunc_TRAMPOLINE".
 fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
     var S = struct {};
     switch (sig) {
