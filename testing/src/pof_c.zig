@@ -71,26 +71,6 @@ pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: [*c]const hpy.H
     point.*.y = y;
     return h_point;
 }
-//pub fn Point_new_trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
-//    var a = hpy._HPyFunc_args_NEWFUNC{
-//        .self = self,
-//        .args = args,
-//        .kw = kw,
-//        .result = null,
-//    };
-//    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))), @as(?*anyopaque, @ptrCast(&a)));
-//    return a.result;
-//}
-//pub export var Point_new = hpy.HPyDef{
-//    .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
-//    .unnamed_0 = .{
-//        .slot = hpy.HPySlot{
-//            .slot = @as(c_uint, @bitCast(hpy.HPy_tp_new)),
-//            .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&Point_new_impl))),
-//            .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&Point_new_trampoline))),
-//        },
-//    },
-//};
 
 pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
