@@ -54,7 +54,7 @@ pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*Po
     return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
 }
 
-pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, "HPy_tp_new");
+pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, hpy.HPy_tp_new);
 pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(kwnames);
     var x: f64 = undefined;
@@ -72,7 +72,7 @@ pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy,
     return h_point;
 }
 
-pub export var Point_repr = hpy.helpers.Def_SLOT(mod_ctx, Point_repr_impl, "HPy_tp_repr");
+pub export var Point_repr = hpy.helpers.Def_SLOT(mod_ctx, Point_repr_impl, hpy.HPy_tp_repr);
 pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;
@@ -96,7 +96,7 @@ pub var point_type_spec = hpy.HPyType_Spec{
     .doc = null,
 };
 
-pub export var mod_exec = hpy.helpers.Def_SLOT(mod_ctx, mod_exec_impl, "HPy_mod_exec");
+pub export var mod_exec = hpy.helpers.Def_SLOT(mod_ctx, mod_exec_impl, hpy.HPy_mod_exec);
 pub fn mod_exec_impl(ctx: [*c]hpy.HPyContext, m: hpy.HPy) callconv(.C) c_int {
     var h_point_type: hpy.HPy = hpy.HPyType_FromSpec(ctx, &point_type_spec, null);
     if (h_point_type._i == @as(isize, @bitCast(@as(c_long, @as(c_int, 0))))) return -@as(c_int, 1);

@@ -2,27 +2,50 @@
 //! strictly necessary, but they greatly reduce boilerplate code. Mainly used to replace
 //! untranslatable HPy C macros such as the macro functions in hpydef.h.
 
+const std = @import("std");
+
 const hpy = @import("./hpy_cimport.zig");
 
-// TODO: Is it possible to pass a HPySlot_Slot value instead of a string? Using a string
-// works just as well, but it'd be nice to track closer to the original macro usage.
 /// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
-pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: []const u8) hpy.HPyDef {
-    const slot_func_sig = "_HPySlot_SIG__" ++ slot;
-    var S = Func_TRAMPOLINE(mod_ctx, impl, @field(hpy, slot_func_sig));
+pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: hpy.HPySlot_Slot) hpy.HPyDef {
+    const slot_func_sig = slotFuncSigLookup(slot);
+    var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
 
-    var slot_enum = @field(hpy, slot);
     var slot_definition = hpy.HPyDef{
         .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
         .unnamed_0 = .{
             .slot = hpy.HPySlot{
-                .slot = @as(c_uint, @bitCast(slot_enum)),
+                .slot = @as(c_uint, @bitCast(slot)), //_enum)),
                 .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
             },
         },
     };
     return slot_definition;
+}
+
+/// Gets the function signature associated with the slot enum passed in.
+fn slotFuncSigLookup(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
+    const autogen_hpyslot = @cImport({
+        @cDefine("HPY", {});
+        @cDefine("HPY_ABI_UNIVERSAL", {});
+        @cInclude("hpy/autogen_hpyslot.h");
+    });
+    const hpy_decls = @typeInfo(autogen_hpyslot).Struct.decls;
+    var slot_name: []const u8 = undefined;
+    for (hpy_decls) |declaration| {
+        if (std.mem.startsWith(u8, declaration.name, "HPy_")) {
+            const val = @field(hpy, declaration.name);
+            if (val == slot) {
+                slot_name = declaration.name;
+                break;
+            }
+        }
+    }
+
+    const slot_func_sig_name = "_HPySlot_SIG__" ++ slot_name;
+    const slot_func_sig: hpy.HPyFunc_Signature = @field(hpy, slot_func_sig_name);
+    return slot_func_sig;
 }
 
 /// Used for defining a module method. Replaces the "HPyDef_METH" macro.
