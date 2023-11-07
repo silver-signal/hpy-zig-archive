@@ -231,6 +231,19 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
     return S;
 }
 
+pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_BuiltinShape) fn (ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*custom_type {
+    _ = shape;
+
+    // TODO: Add check that custom_type is an extern struct.
+
+    const S = struct {
+        pub fn objectHelper(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*custom_type {
+            return @as([*c]custom_type, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
+        }
+    };
+    return S.objectHelper;
+}
+
 pub fn initGlobalContext(comptime mod_name: []const u8) *?*hpy.HPyContext {
     // Exports the function used by HPy to pass a context to by used by functions
     const S = struct {

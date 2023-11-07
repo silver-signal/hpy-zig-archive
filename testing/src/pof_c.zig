@@ -50,9 +50,10 @@ pub const PointObject = extern struct {
     x: f64,
     y: f64,
 };
-pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*PointObject {
-    return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
-}
+pub const PointObject_AsStruct = hpy.helpers.Type_HELPERS(PointObject, hpy.HPyType_BuiltinShape_Object);
+//pub fn PointObject_AsStruct(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*PointObject {
+//    return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
+//}
 
 pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, hpy.HPy_tp_new);
 pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
