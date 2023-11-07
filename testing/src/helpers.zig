@@ -4,6 +4,10 @@
 
 const std = @import("std");
 
+const abort = @cImport({
+    @cInclude("stdlib.h");
+}).abort;
+
 const hpy = @import("./hpy_cimport.zig");
 
 /// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
@@ -126,17 +130,77 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                 }
             };
         },
-        hpy.HPyFunc_DESTROYFUNC,
-        hpy.HPyFunc_GETBUFFERPROC,
-        hpy.HPyFunc_RELEASEBUFFERPROC,
-        hpy.HPyFunc_UNARYFUNC,
-        hpy.HPyFunc_BINARYFUNC,
-        hpy.HPyFunc_TERNARYFUNC,
-        => {
-            const msg =
-                \\This HPy method has not been implemented yet.
-            ;
-            @compileError(msg);
+        hpy.HPyFunc_DESTROYFUNC => {
+            S = struct {
+                pub fn trampoline() callconv(.C) void {
+                    abort();
+                }
+            };
+        },
+        hpy.HPyFunc_GETBUFFERPROC => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, view: ?*hpy.cpy_Py_buffer, flags: c_int) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_GETBUFFERPROC{
+                        .self = self,
+                        .view = view,
+                        .flags = flags,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_RELEASEBUFFERPROC => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, view: ?*hpy.cpy_Py_buffer) callconv(.C) void {
+                    var a = hpy._HPyFunc_args_RELEASEBUFFERPROC{
+                        .self = self,
+                        .view = view,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_RELEASEBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return;
+                }
+            };
+        },
+        hpy.HPyFunc_UNARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_UNARYFUNC{
+                        .arg0 = arg0,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_UNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_BINARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_BINARYFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_BINARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_TERNARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_TERNARYFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_TERNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
         },
         hpy.HPyFunc_INQUIRY => {
             S = struct {
