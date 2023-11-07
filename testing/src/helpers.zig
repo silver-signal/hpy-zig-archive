@@ -214,18 +214,140 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                 }
             };
         },
-        hpy.HPyFunc_LENFUNC,
-        hpy.HPyFunc_SSIZEARGFUNC,
-        hpy.HPyFunc_SSIZESSIZEARGFUNC,
-        hpy.HPyFunc_SSIZEOBJARGPROC,
-        hpy.HPyFunc_SSIZESSIZEOBJARGPROC,
-        hpy.HPyFunc_OBJOBJARGPROC,
-        hpy.HPyFunc_FREEFUNC,
-        hpy.HPyFunc_GETATTRFUNC,
-        hpy.HPyFunc_GETATTROFUNC,
-        hpy.HPyFunc_SETATTRFUNC,
-        hpy.HPyFunc_SETATTROFUNC,
-        => {
+        hpy.HPyFunc_LENFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) hpy.HPy_ssize_t {
+                    var a = hpy._HPyFunc_args_LENFUNC{
+                        .arg0 = arg0,
+                        .result = std.mem.zeroes(hpy.HPy_ssize_t),
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_LENFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZEARGFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_SSIZEARGFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZESSIZEARGFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_SSIZESSIZEARGFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZESSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZEOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_SSIZEOBJARGPROC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZESSIZEOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: hpy.HPy_ssize_t, arg3: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_SSIZESSIZEOBJARGPROC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .arg3 = arg3,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZESSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_OBJOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_OBJOBJARGPROC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_OBJOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_FREEFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*anyopaque) callconv(.C) void {
+                    var a = hpy._HPyFunc_args_FREEFUNC{
+                        .arg0 = arg0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_FREEFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return;
+                }
+            };
+        },
+        hpy.HPyFunc_GETATTRFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*c]u8) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_GETATTRFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_GETATTROFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    var a = hpy._HPyFunc_args_GETATTROFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .result = null,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETATTROFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SETATTRFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*c]u8, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    var a = hpy._HPyFunc_args_SETATTRFUNC{
+                        .arg0 = arg0,
+                        .arg1 = arg1,
+                        .arg2 = arg2,
+                        .result = 0,
+                    };
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    return a.result;
+                }
+            };
+        },
+        hpy.HPyFunc_SETATTROFUNC => {
             const msg =
                 \\This HPy method has not been implemented yet.
             ;
