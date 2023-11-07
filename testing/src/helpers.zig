@@ -71,6 +71,17 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime meth_name: []const
     return method_definition;
 }
 
+/// Convenience function for generating an HPyCallFunction definition. Replaces the "HPyDef_CALL_FUNCTION" macro
+pub fn Def_CALL_FUNCTION(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyCallFunction {
+    _ = name;
+    var S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_KEYWORDS);
+    var call_function_definition = hpy.HPyCallFunction{
+        .cpy_trampoline = @as(hpy.cpy_vectorcallfunc, @ptrCast(@alignCast(&S.trampoline))),
+        .impl = @as(hpy.HPyFunc_keywords, @ptrCast(@alignCast(&impl))),
+    };
+    return call_function_definition;
+}
+
 /// Emit a CPython-compatible trampoline which calls IMPL, where IMPL has the signature SIG.
 /// Replaces the HPy macro "HPyFunc_TRAMPOLINE".
 pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
