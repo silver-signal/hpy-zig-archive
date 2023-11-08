@@ -16,10 +16,10 @@ pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, com
     var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
 
     var slot_definition = hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Slot)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Slot)),
         .unnamed_0 = .{
             .slot = hpy.HPySlot{
-                .slot = @as(c_uint, @bitCast(slot)), //_enum)),
+                .slot = @as(hpy.HPySlot_Slot, @bitCast(slot)), //_enum)),
                 .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
             },
@@ -100,13 +100,13 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, 
     var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
 
     return hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Meth)),
         .unnamed_0 = .{
             .meth = hpy.HPyMeth{
                 .name = @ptrCast(name),
                 .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
-                .signature = @as(c_uint, @bitCast(sig)),
+                .signature = @as(hpy.HPyFunc_Signature, @bitCast(sig)),
                 .doc = null,
             },
         },
@@ -116,7 +116,7 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, 
 /// Convenience function for generating HPy Member definition. Replaces the "HPyDef_MEMBER" macro.
 pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, offset: comptime_int) hpy.HPyDef {
     return hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Meth)),
         .unnamed_0 = .{
             .member = hpy.HPyMeth{
                 .name = @ptrCast(name),
@@ -132,7 +132,7 @@ pub fn Def_GET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
     const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_GETTER);
 
     return hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_GetSet)),
         .unnamed_0 = .{
             .getset = hpy.HPyGetSet{
                 .name = @ptrCast(name),
@@ -149,7 +149,7 @@ pub fn Def_SET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
     const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_SETTER);
 
     return hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_GetSet)),
         .unnamed_0 = .{
             .getset = hpy.HPyGetSet{
                 .name = @ptrCast(name),
@@ -167,7 +167,7 @@ pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8
     const S2 = Func_TRAMPOLINE(mod_ctx, set_impl, hpy.HPyFunc_SETTER);
 
     return hpy.HPyDef{
-        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_GetSet)),
         .unnamed_0 = .{
             .getset = hpy.HPyGetSet{
                 .name = @ptrCast(name),
@@ -175,7 +175,7 @@ pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8
                 .getter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S1.trampoline))),
                 .setter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&set_impl))),
                 .setter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S2.trampoline))),
-                .signature = @as(c_uint, @bitCast(hpy.HPyFunc_GETTER)),
+                .signature = @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETTER)),
                 .doc = null,
             },
         },
@@ -205,7 +205,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .self = self,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(sig)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -219,7 +219,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .nargs = nargs,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_VARARGS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -234,7 +234,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .kwnames = kwnames,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_KEYWORDS)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -247,7 +247,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg = arg,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_O)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -268,7 +268,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .flags = flags,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -280,7 +280,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .self = self,
                         .view = view,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_RELEASEBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_RELEASEBUFFERPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return;
                 }
             };
@@ -292,7 +292,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_UNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_UNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -305,7 +305,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_BINARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_BINARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -319,7 +319,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_TERNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_TERNARYFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -331,7 +331,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_INQUIRY)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -343,7 +343,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = std.mem.zeroes(hpy.HPy_ssize_t),
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_LENFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_LENFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -356,7 +356,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -370,7 +370,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZESSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SSIZESSIZEARGFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -384,7 +384,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -399,7 +399,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg3 = arg3,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SSIZESSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SSIZESSIZEOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -413,7 +413,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_OBJOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_OBJOBJARGPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -424,7 +424,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                     var a = hpy._HPyFunc_args_FREEFUNC{
                         .arg0 = arg0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_FREEFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_FREEFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return;
                 }
             };
@@ -437,7 +437,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -450,7 +450,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETATTROFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETATTROFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -464,7 +464,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SETATTRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -478,7 +478,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SETATTROFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SETATTROFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -490,7 +490,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_REPRFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -502,21 +502,21 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = std.mem.zeroes(hpy.HPy_hash_t),
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_HASHFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_HASHFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
         },
         hpy.HPyFunc_RICHCMPFUNC => {
             S = struct {
-                pub fn trampoline(self: ?*hpy.cpy_PyObject, obj: ?*hpy.cpy_PyObject, op: c_int) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, obj: ?*hpy.cpy_PyObject, op: hpy.HPy_RichCompOp) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_RICHCMPFUNC{
                         .arg0 = self,
                         .arg1 = obj,
-                        .arg2 = @as(c_uint, @bitCast(op)),
+                        .arg2 = @as(hpy.HPy_RichCompOp, @bitCast(op)),
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_RICHCMPFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_RICHCMPFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -528,7 +528,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETITERFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETITERFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -540,7 +540,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = arg0,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_ITERNEXTFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_ITERNEXTFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -554,7 +554,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_DESCRGETFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_DESCRGETFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -568,7 +568,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_DESCRSETFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_DESCRSETFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -582,7 +582,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .kw = kw,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_INITPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_INITPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -596,7 +596,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .kw = kw,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_NEWFUNC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -609,7 +609,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_GETTER)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETTER)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -623,7 +623,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg2 = arg2,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_SETTER)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_SETTER)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -636,7 +636,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg1 = arg1,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_OBJOBJPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_OBJOBJPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -650,7 +650,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg = arg,
                         .result = 0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_TRAVERSEPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_TRAVERSEPROC)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
@@ -661,7 +661,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                     var a = hpy._HPyFunc_args_DESTRUCTOR{
                         .arg0 = arg0,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_DESTRUCTOR)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_DESTRUCTOR)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return;
                 }
             };
@@ -669,7 +669,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         hpy.HPyFunc_CAPSULE_DESTRUCTOR => {
             S = struct {
                 pub fn trampoline(capsule: ?*hpy.cpy_PyObject) callconv(.C) void {
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_CAPSULE_DESTRUCTOR)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(capsule)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_CAPSULE_DESTRUCTOR)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(capsule)));
                 }
             };
         },
@@ -682,7 +682,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                         .arg0 = spec,
                         .result = null,
                     };
-                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(c_uint, @bitCast(hpy.HPyFunc_MOD_CREATE)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
+                    hpy._HPy_CallRealFunctionFromTrampoline(mod_ctx.*, @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_MOD_CREATE)), @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))), @as(?*anyopaque, @ptrCast(&a)));
                     return a.result;
                 }
             };
