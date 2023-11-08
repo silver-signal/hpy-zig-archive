@@ -587,6 +587,8 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
     return S;
 }
 
+/// A convenience function for creating a helper function for the supplied type.
+/// Replaces the "HPyType_HELPERS" macro.
 pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_BuiltinShape) fn (ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*custom_type {
     _ = shape;
 
@@ -600,6 +602,8 @@ pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_Buil
     return S.objectHelper;
 }
 
+/// Initializes the global context variable used by function trampolines.
+/// Partially replaces the "HPy_MODINIT" macro.
 pub fn initGlobalContext(comptime mod_name: []const u8) *?*hpy.HPyContext {
     // Exports the function used by HPy to pass a context to by used by functions
     const S = struct {
@@ -614,6 +618,8 @@ pub fn initGlobalContext(comptime mod_name: []const u8) *?*hpy.HPyContext {
     return &S._ctx_for_trampolines;
 }
 
+/// A convenience type for creating a module definition in zig, rather than interop with the
+/// C definition, HPyModuleDef.
 pub const ModuleDef = extern struct {
     doc: [*]const u8 = "",
     size: hpy.HPy_ssize_t = 0,
@@ -622,6 +628,7 @@ pub const ModuleDef = extern struct {
     globals: ?[*:null]?*hpy.HPyGlobal = null,
 };
 
+/// Exports functions required by the HPy ABI. Partially replaces the "HPy_MODINIT" macro.
 pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*ModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
@@ -641,10 +648,12 @@ pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*Modu
     @export(S.Init_module, .{ .name = init_modname, .linkage = .Strong });
 }
 
+/// The HPy major version that this code was compiled with. Required by the HPy ABI.
 fn get_required_hpy_major_version_module() callconv(.C) u32 {
     return hpy.HPY_ABI_VERSION;
 }
 
+/// The HPy minor version that this code was compiled with. Required by the HPy ABI.
 fn get_required_hpy_minor_version_module() callconv(.C) u32 {
     return hpy.HPY_ABI_VERSION_MINOR;
 }
