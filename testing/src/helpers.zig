@@ -137,8 +137,11 @@ pub fn Def_GET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
             .getset = hpy.HPyGetSet{
                 .name = @ptrCast(name),
                 .getter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .setter_impl = null,
                 .getter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
+                .setter_cpy_trampoline = null,
                 .doc = null,
+                .closure = null,
             },
         },
     };
@@ -153,9 +156,12 @@ pub fn Def_SET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
         .unnamed_0 = .{
             .getset = hpy.HPyGetSet{
                 .name = @ptrCast(name),
+                .getter_impl = null,
                 .setter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .getter_cpy_trampoline = null,
                 .setter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
                 .doc = null,
+                .closure = null,
             },
         },
     };
@@ -177,6 +183,7 @@ pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8
                 .setter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S2.trampoline))),
                 .signature = @as(hpy.HPyFunc_Signature, @bitCast(hpy.HPyFunc_GETTER)),
                 .doc = null,
+                .closure = null,
             },
         },
     };
@@ -748,7 +755,7 @@ pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*Modu
     const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
     @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
 
-    // Exports the function used by HPy to get the module definition
+    // Exports the function used by HPy to get the module definition. Required by the HPy ABI.
     const S = struct {
         const _module_def = @as(*hpy.HPyModuleDef, @ptrCast(@constCast(module_def)));
         pub fn Init_module() callconv(.C) ?*hpy.HPyModuleDef {
