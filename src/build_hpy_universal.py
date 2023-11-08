@@ -65,26 +65,27 @@ def build(
         subprocess.call(arg_list, stdout=zig_file)
 
 
+ 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
-    hpy_define_macros = ["HPY_ABI_UNIVERSAL"]
+    hpy_define_macros = ["HPY", "HPY_ABI_UNIVERSAL"]
+    
     hpy_devel = files(hpy.devel.include)
     with as_file(hpy_devel) as hpy:
         hpy_header = hpy / 'hpy.h'
-        quickstart_c = "./quickstart.c"
-        autogen_hpyslot = hpy / "hpy" / "autogen_hpyslot.h"
-        trampolines = "./trampolines.c"
         build(zig_file_name='hpy_universal', source=hpy_header, 
                 define_macros=hpy_define_macros, include_dirs=[hpy],
                 py_limited_api=True)
-        ##build(zig_file_name='quickstart_c_translated', source=quickstart_c, 
-        ##        define_macros=hpy_define_macros, include_dirs=[hpy],
-        ##        py_limited_api=True)
-        build(zig_file_name='autogen_hpyslot_translated', source=autogen_hpyslot, 
-                define_macros=hpy_define_macros, include_dirs=[hpy],
-                py_limited_api=True)
-        build(zig_file_name='trampolines_c_translated', source=trampolines, 
-                define_macros=hpy_define_macros, include_dirs=[hpy],
-                py_limited_api=True)
+
+        cwd = Path(".")
+        c_file_list = []
+        c_file_list.extend(list(cwd.rglob('*.h')))
+        c_file_list.extend(list(cwd.rglob('*.c')))
+        for file in c_file_list:
+            build(zig_file_name=file.stem, source=file, 
+                    define_macros=hpy_define_macros, include_dirs=[hpy],
+                    py_limited_api=True)
+
+
 
