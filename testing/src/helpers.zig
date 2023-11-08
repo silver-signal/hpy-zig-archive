@@ -12,7 +12,7 @@ const hpy = @import("./hpy_cimport.zig");
 
 /// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
 pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: hpy.HPySlot_Slot) hpy.HPyDef {
-    const slot_func_sig = slotFuncSigLookup(slot);
+    const slot_func_sig = Slot_SIG(slot);
     var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
 
     var slot_definition = hpy.HPyDef{
@@ -29,7 +29,7 @@ pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, com
 }
 
 /// Gets the function signature associated with the slot enum passed in.
-fn slotFuncSigLookup(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
+pub fn Slot_SIG(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
     return switch (slot) {
         hpy.HPy_bf_getbuffer => hpy.HPyFunc_GETBUFFERPROC,
         hpy.HPy_bf_releasebuffer => hpy.HPyFunc_RELEASEBUFFERPROC,
@@ -96,14 +96,14 @@ fn slotFuncSigLookup(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
 }
 
 /// Used for defining a module method. Replaces the "HPyDef_METH" macro.
-pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime meth_name: []const u8, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) hpy.HPyDef {
+pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) hpy.HPyDef {
     var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
 
-    var method_definition = hpy.HPyDef{
+    return hpy.HPyDef{
         .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
         .unnamed_0 = .{
             .meth = hpy.HPyMeth{
-                .name = @ptrCast(meth_name),
+                .name = @ptrCast(name),
                 .impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
                 .cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
                 .signature = @as(c_uint, @bitCast(sig)),
@@ -111,7 +111,20 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime meth_name: []const
             },
         },
     };
-    return method_definition;
+}
+
+/// Convenience function for generating HPy Member definition. Replaces the "HPyDef_MEMBER" macro.
+pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, comptime offset: usize) hpy.HPyDef {
+    return hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
+        .unnamed_0 = .{
+            .member = hpy.HPyMeth{
+                .name = @ptrCast(name),
+                .type = @as(hpy.HPyMember_FieldType, @bitCast(field_type)),
+                .offset = offset,
+            },
+        },
+    };
 }
 
 /// Convenience function for generating an HPyCallFunction definition. Replaces the "HPyDef_CALL_FUNCTION" macro
