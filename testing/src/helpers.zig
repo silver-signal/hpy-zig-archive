@@ -114,7 +114,7 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, 
 }
 
 /// Convenience function for generating HPy Member definition. Replaces the "HPyDef_MEMBER" macro.
-pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, comptime offset: usize) hpy.HPyDef {
+pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, offset: comptime_int) hpy.HPyDef {
     return hpy.HPyDef{
         .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_Meth)),
         .unnamed_0 = .{
@@ -122,6 +122,61 @@ pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_
                 .name = @ptrCast(name),
                 .type = @as(hpy.HPyMember_FieldType, @bitCast(field_type)),
                 .offset = offset,
+            },
+        },
+    };
+}
+
+/// Convenience function for generating HPy get descriptor. Replaces the "HPyDef_GET" macro.
+pub fn Def_GET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
+    const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_GETTER);
+
+    return hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .unnamed_0 = .{
+            .getset = hpy.HPyGetSet{
+                .name = @ptrCast(name),
+                .getter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .getter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
+                .doc = null,
+            },
+        },
+    };
+}
+
+/// Convenience function for generating HPy set descriptor. Replaces the "HPyDef_SET" macro.
+pub fn Def_SET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
+    const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_SETTER);
+
+    return hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .unnamed_0 = .{
+            .getset = hpy.HPyGetSet{
+                .name = @ptrCast(name),
+                .setter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&impl))),
+                .setter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S.trampoline))),
+                .doc = null,
+            },
+        },
+    };
+}
+
+/// Convenience function for generating HPy get-set descriptor. Replaces the "HPyDef_GETSET" macro.
+pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime get_impl: anytype, comptime set_impl: anytype) hpy.HPyDef {
+    const S1 = Func_TRAMPOLINE(mod_ctx, get_impl, hpy.HPyFunc_GETTER);
+    const S2 = Func_TRAMPOLINE(mod_ctx, set_impl, hpy.HPyFunc_SETTER);
+
+    return hpy.HPyDef{
+        .kind = @as(c_uint, @bitCast(hpy.HPyDef_Kind_GetSet)),
+        .unnamed_0 = .{
+            .getset = hpy.HPyGetSet{
+                .name = @ptrCast(name),
+                .getter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&get_impl))),
+                .getter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S1.trampoline))),
+                .setter_impl = @as(hpy.HPyCFunction, @ptrCast(@alignCast(&set_impl))),
+                .setter_cpy_trampoline = @as(hpy.cpy_PyCFunction, @ptrCast(@alignCast(&S2.trampoline))),
+                .signature = @as(c_uint, @bitCast(hpy.HPyFunc_GETTER)),
+                .doc = null,
             },
         },
     };
