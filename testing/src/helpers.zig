@@ -700,13 +700,3 @@ fn get_required_hpy_major_version_module() callconv(.C) u32 {
 fn get_required_hpy_minor_version_module() callconv(.C) u32 {
     return hpy.HPY_ABI_VERSION_MINOR;
 }
-
-const testing = std.testing;
-
-test "check slotFuncSigLookup return value" {
-    //try testing.expect(slotFuncSigLookup(hpy.HPy_bf_getbuffer) == hpy.HPyFunc_GETBUFFERPROC);
-    //try testing.expect(slotFuncSigLookup(hpy.HPy_tp_new) == hpy.HPyFunc_NEWFUNC);
-    try testing.expect(true);
-    //const testCompileError = @compileError("testing...");
-    //try testing.expect(@TypeOf(testCompileError) != u8);
-}
