@@ -1,8 +1,16 @@
+"""
+This file is for using zig's translate-c functionality to quickly see how a zig implementation of
+HPy can look. When running this script, hpy.h will be automatically translated into a file titled
+"hpy_universal.zig", and any .c or .h files in this directory will be translated to a zig file of
+the same name.
+
+"""
+
 import sys
 import subprocess
 import logging
 from pathlib import Path
-from sysconfig import get_python_version, get_path, get_config_vars
+from sysconfig import get_path, get_config_vars
 from typing import Optional
 
 from importlib_resources import files, as_file
