@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const hpy = @import("./hpy.zig");
+const hpy = @import("./hpy-zig/src/hpy.zig");
 const HPy = hpy.HPy;
 
 var mod_ctx: ?*hpy.HPyContext = null;

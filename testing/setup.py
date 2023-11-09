@@ -2,9 +2,18 @@ from setuptools import Extension, setup
 from setuptools_ziglang.build_zig_ext import BuildZigExt
 
 from pathlib import Path
+import shutil
 
-INCLUDE_DIRS = [str(Path(__file__).parent.parent / 'src')]
-print(f"{INCLUDE_DIRS=}")
+SRC_DIR = Path(__file__).parent.parent / 'src'
+src_list = list(SRC_DIR.rglob('*.zig'))
+DEST_DIR = Path(__file__).parent / 'src' / 'hpy-zig' / 'src'  
+
+DEST_DIR.mkdir(parents=True, exist_ok=True)
+
+for file in src_list:
+    print(f"Copying {file} to {DEST_DIR}...")
+    shutil.copy(file, DEST_DIR)
+
 
 setup(
     name="quickstart",
@@ -12,17 +21,10 @@ setup(
         Extension(
             name='quickstart_zig',
             sources=['src/quickstart.zig'],
-            include_dirs=INCLUDE_DIRS,
         ),
-##        Extension(
-##            name='pof',
-##            sources=['src/pof.c'],
-##            include_dirs=INCLUDE_DIRS,
-##        ),
         Extension(
             name='pof',
             sources=['src/pof_c.zig'],
-            include_dirs=INCLUDE_DIRS,
         ),
     ],
     cmdclass={'build_ext': BuildZigExt},

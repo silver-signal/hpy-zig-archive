@@ -1,4 +1,4 @@
-const hpy = @import("./hpy.zig");
+const hpy = @import("./hpy-zig/src/hpy.zig");
 
 const stdio = @cImport({
     @cInclude("stdio.h");
