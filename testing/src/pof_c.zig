@@ -5,21 +5,21 @@ const stdio = @cImport({
 });
 const snprintf = stdio.snprintf;
 
-const mod_ctx = hpy.helpers.initGlobalContext("pof");
+var mod_ctx: ?*hpy.HPyContext = null;
 
-pub export var do_nothing = hpy.helpers.Def_METH(mod_ctx, "do_nothing", do_nothing_impl, hpy.HPyFunc_NOARGS);
+pub export var do_nothing = hpy.helpers.Def_METH(&mod_ctx, "do_nothing", do_nothing_impl, hpy.HPyFunc_NOARGS);
 pub fn do_nothing_impl(ctx: *hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     _ = self;
     return hpy.HPy_Dup(ctx, ctx.*.h_None);
 }
 
-pub export var double_obj = hpy.helpers.Def_METH(mod_ctx, "double", double_obj_impl, hpy.HPyFunc_O);
+pub export var double_obj = hpy.helpers.Def_METH(&mod_ctx, "double", double_obj_impl, hpy.HPyFunc_O);
 pub fn double_obj_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, obj: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     return hpy.HPy_Add(ctx, obj, obj);
 }
 
-pub export var add_ints = hpy.helpers.Def_METH(mod_ctx, "add_ints", add_ints_impl, hpy.HPyFunc_VARARGS);
+pub export var add_ints = hpy.helpers.Def_METH(&mod_ctx, "add_ints", add_ints_impl, hpy.HPyFunc_VARARGS);
 pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy, nargs: usize) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
@@ -30,7 +30,7 @@ pub fn add_ints_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy,
     return hpy.HPyLong_FromLong(ctx, a + b);
 }
 
-pub export var add_ints_kw = hpy.helpers.Def_METH(mod_ctx, "add_ints_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
+pub export var add_ints_kw = hpy.helpers.Def_METH(&mod_ctx, "add_ints_kw", add_ints_kw_impl, hpy.HPyFunc_KEYWORDS);
 pub fn add_ints_kw_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy, args: *const hpy.HPy, nargs: usize, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(self);
     var a: c_long = undefined;
@@ -55,7 +55,7 @@ pub const PointObject_AsStruct = hpy.helpers.Type_HELPERS(PointObject, hpy.HPyTy
 //    return @as([*c]PointObject, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
 //}
 
-pub export var Point_new = hpy.helpers.Def_SLOT(mod_ctx, Point_new_impl, hpy.HPy_tp_new);
+pub export var Point_new = hpy.helpers.Def_SLOT(&mod_ctx, Point_new_impl, hpy.HPy_tp_new);
 pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy, nargs: hpy.HPy_ssize_t, kwnames: hpy.HPy) callconv(.C) hpy.HPy {
     _ = @TypeOf(kwnames);
     var x: f64 = undefined;
@@ -73,7 +73,7 @@ pub fn Point_new_impl(ctx: ?*hpy.HPyContext, cls: hpy.HPy, args: *const hpy.HPy,
     return h_point;
 }
 
-pub export var Point_repr = hpy.helpers.Def_SLOT(mod_ctx, Point_repr_impl, hpy.HPy_tp_repr);
+pub export var Point_repr = hpy.helpers.Def_SLOT(&mod_ctx, Point_repr_impl, hpy.HPy_tp_repr);
 pub fn Point_repr_impl(ctx: ?*hpy.HPyContext, self: hpy.HPy) callconv(.C) hpy.HPy {
     var point: [*c]PointObject = PointObject_AsStruct(ctx, self);
     var msg: [256]u8 = undefined;
@@ -97,7 +97,7 @@ pub var point_type_spec = hpy.HPyType_Spec{
     .doc = null,
 };
 
-pub export var mod_exec = hpy.helpers.Def_SLOT(mod_ctx, mod_exec_impl, hpy.HPy_mod_exec);
+pub export var mod_exec = hpy.helpers.Def_SLOT(&mod_ctx, mod_exec_impl, hpy.HPy_mod_exec);
 pub fn mod_exec_impl(ctx: [*c]hpy.HPyContext, m: hpy.HPy) callconv(.C) c_int {
     var h_point_type: hpy.HPy = hpy.HPyType_FromSpec(ctx, &point_type_spec, null);
     if (h_point_type._i == @as(isize, @bitCast(@as(c_long, @as(c_int, 0))))) return -@as(c_int, 1);
@@ -120,5 +120,5 @@ var pofdef = hpy.helpers.ModuleDef{
 };
 
 comptime {
-    hpy.helpers.MODINIT("pof", &pofdef);
+    hpy.helpers.MODINIT(&mod_ctx, "pof", &pofdef);
 }

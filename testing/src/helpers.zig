@@ -720,22 +720,6 @@ pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_Buil
     return S.objectHelper;
 }
 
-/// Initializes the global context variable used by function trampolines.
-/// Partially replaces the "HPy_MODINIT" macro.
-pub fn initGlobalContext(comptime mod_name: []const u8) *?*hpy.HPyContext {
-    // Exports the function used by HPy to pass a context to by used by functions
-    const S = struct {
-        pub var _ctx_for_trampolines: ?*hpy.HPyContext = null;
-        pub fn InitGlobalContext_module(ctx: ?*hpy.HPyContext) callconv(.C) void {
-            _ctx_for_trampolines = ctx;
-        }
-    };
-    const hpyinitcontext_name = "HPyInitGlobalContext_" ++ mod_name;
-    @export(S.InitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
-
-    return &S._ctx_for_trampolines;
-}
-
 /// A convenience type for creating a module definition in zig, rather than interop with the
 /// C definition, HPyModuleDef.
 pub const ModuleDef = extern struct {
@@ -746,8 +730,8 @@ pub const ModuleDef = extern struct {
     globals: ?[*:null]?*hpy.HPyGlobal = null,
 };
 
-/// Exports functions required by the HPy ABI. Partially replaces the "HPy_MODINIT" macro.
-pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*ModuleDef) void {
+/// Exports functions required by the HPy ABI. Replaces the "HPy_MODINIT" macro.
+pub inline fn MODINIT(comptime mod_ctx: *?*hpy.HPyContext, comptime mod_name: []const u8, comptime module_def: ?*ModuleDef) void {
 
     // Exports the functions used by HPy for getting the ABI version
     const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
@@ -756,14 +740,24 @@ pub inline fn MODINIT(comptime mod_name: []const u8, comptime module_def: ?*Modu
     @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
 
     // Exports the function used by HPy to get the module definition. Required by the HPy ABI.
-    const S = struct {
+    const S1 = struct {
         const _module_def = @as(*hpy.HPyModuleDef, @ptrCast(@constCast(module_def)));
         pub fn Init_module() callconv(.C) ?*hpy.HPyModuleDef {
             return _module_def;
         }
     };
     const init_modname = "HPyInit_" ++ mod_name;
-    @export(S.Init_module, .{ .name = init_modname, .linkage = .Strong });
+    @export(S1.Init_module, .{ .name = init_modname, .linkage = .Strong });
+
+    // Exports the function used by HPy to pass a context to by used by functions
+    const S2 = struct {
+        //pub var _ctx_for_trampolines: ?*hpy.HPyContext = null;
+        pub fn InitGlobalContext_module(ctx: ?*hpy.HPyContext) callconv(.C) void {
+            mod_ctx.* = ctx;
+        }
+    };
+    const hpyinitcontext_name = "HPyInitGlobalContext_" ++ mod_name;
+    @export(S2.InitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
 }
 
 /// The HPy major version that this code was compiled with. Required by the HPy ABI.
