@@ -7,7 +7,6 @@ python_versions = ["python3.11"] ## "pypy3.8", "pypy3.9"]
 @nox.session(python=python_versions)
 def tests(session):
     session.install("setuptools-ziglang")
-    ##session.install("ziglang")
     session.install("hpy")
     session.run(session.python, "setup.py", "--hpy-abi=universal", "bdist_wheel",)
     
