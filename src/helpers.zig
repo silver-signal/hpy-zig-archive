@@ -749,7 +749,7 @@ pub inline fn MODINIT(comptime mod_ctx: *?*hpy.HPyContext, comptime mod_name: []
     const init_modname = "HPyInit_" ++ mod_name;
     @export(S1.Init_module, .{ .name = init_modname, .linkage = .Strong });
 
-    // Exports the function used by HPy to pass a context to by used by functions
+    // Exports the function used by HPy to pass a context to by used by functions. Required by the HPy ABI.
     const S2 = struct {
         //pub var _ctx_for_trampolines: ?*hpy.HPyContext = null;
         pub fn InitGlobalContext_module(ctx: ?*hpy.HPyContext) callconv(.C) void {
