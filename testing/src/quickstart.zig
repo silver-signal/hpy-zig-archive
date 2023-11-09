@@ -21,5 +21,5 @@ var quickstart_zig_def = hpy.helpers.ModuleDef{
 };
 
 comptime {
-    hpy.helpers.MODINIT(&mod_ctx, "quickstart_zig", &quickstart_zig_def);
+    hpy.helpers.MODINIT(&mod_ctx, "quickstart", &quickstart_zig_def);
 }

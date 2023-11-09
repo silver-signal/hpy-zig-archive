@@ -16,15 +16,15 @@ for file in src_list:
 
 
 setup(
-    name="quickstart",
+    name="hpy_zig_test",
     hpy_ext_modules=[
         Extension(
-            name='quickstart_zig',
+            name='quickstart',
             sources=['src/quickstart.zig'],
         ),
         Extension(
             name='pof',
-            sources=['src/pof_c.zig'],
+            sources=['src/pof.zig'],
         ),
     ],
     cmdclass={'build_ext': BuildZigExt},

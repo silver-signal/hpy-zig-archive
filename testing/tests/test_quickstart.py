@@ -1,4 +1,4 @@
-import quickstart_zig
+import quickstart
 
 def test_quickstart():
-    assert(quickstart_zig.say_hello() == 'Hello world!')
+    assert(quickstart.say_hello() == 'Hello world!')
