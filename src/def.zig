@@ -4,18 +4,21 @@
 
 const std = @import("std");
 
+// FIXME: There must be a zig stdlib function to replace this.
 const abort = @cImport({
     @cInclude("stdlib.h");
 }).abort;
 
 const hpy = @import("./hpy_cimport.zig");
+const abi = @import("config.zig").hpy_abi;
+const cpython_abi = std.mem.eql(u8, abi, "HPY_ABI_CPYTHON");
 
 /// Module slot definition helper. Replaces the "HPyDef_SLOT" macro.
-pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: hpy.HPySlot_Slot) hpy.HPyDef {
-    const slot_func_sig = Slot_SIG(slot);
+pub fn Slot(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime slot: hpy.HPySlot_Slot) hpy.HPyDef {
+    const slot_func_sig = SlotSignature(slot);
     var S = Func_TRAMPOLINE(mod_ctx, impl, slot_func_sig);
 
-    var slot_definition = hpy.HPyDef{
+    const slot_definition = hpy.HPyDef{
         .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Slot)),
         .unnamed_0 = .{
             .slot = hpy.HPySlot{
@@ -29,7 +32,7 @@ pub fn Def_SLOT(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, com
 }
 
 /// Gets the function signature associated with the slot enum passed in.
-pub fn Slot_SIG(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
+pub fn SlotSignature(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
     return switch (slot) {
         hpy.HPy_bf_getbuffer => hpy.HPyFunc_GETBUFFERPROC,
         hpy.HPy_bf_releasebuffer => hpy.HPyFunc_RELEASEBUFFERPROC,
@@ -91,13 +94,13 @@ pub fn Slot_SIG(comptime slot: hpy.HPySlot_Slot) hpy.HPyFunc_Signature {
         hpy.HPy_tp_destroy => hpy.HPyFunc_DESTROYFUNC,
         hpy.HPy_mod_create => hpy.HPyFunc_MOD_CREATE,
         hpy.HPy_mod_exec => hpy.HPyFunc_INQUIRY,
-        else => @compileError("Unknown slot value. Unable to determine function signature."),
+        else => @compileError("Unknown slot value. Unable to determine slot function signature."),
     };
 }
 
 /// Used for defining a module method. Replaces the "HPyDef_METH" macro.
-pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) hpy.HPyDef {
-    var S = Func_TRAMPOLINE(mod_ctx, impl, sig);
+pub fn Method(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) hpy.HPyDef {
+    const S = Func_TRAMPOLINE(mod_ctx, impl, sig);
 
     return hpy.HPyDef{
         .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Meth)),
@@ -114,9 +117,12 @@ pub fn Def_METH(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, 
 }
 
 /// Convenience function for generating HPy Member definition. Replaces the "HPyDef_MEMBER" macro.
-pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, offset: comptime_int) hpy.HPyDef {
+pub fn Member(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime field_type: hpy.HPyMember_FieldType, offset: comptime_int) hpy.HPyDef {
+    // mod_ctx exists to maintain API symmetry with the other "HPyDef" functions, and to prevent
+    // API breakage if it's needed in the future.
+    _ = mod_ctx;
     return hpy.HPyDef{
-        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Meth)),
+        .kind = @as(hpy.HPyDef_Kind, @bitCast(hpy.HPyDef_Kind_Member)),
         .unnamed_0 = .{
             .member = hpy.HPyMeth{
                 .name = @ptrCast(name),
@@ -128,7 +134,7 @@ pub fn Def_MEMBER(comptime name: []const u8, comptime field_type: hpy.HPyMember_
 }
 
 /// Convenience function for generating HPy get descriptor. Replaces the "HPyDef_GET" macro.
-pub fn Def_GET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
+pub fn Get(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
     const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_GETTER);
 
     return hpy.HPyDef{
@@ -148,7 +154,7 @@ pub fn Def_GET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
 }
 
 /// Convenience function for generating HPy set descriptor. Replaces the "HPyDef_SET" macro.
-pub fn Def_SET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
+pub fn Set(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyDef {
     const S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_SETTER);
 
     return hpy.HPyDef{
@@ -168,7 +174,7 @@ pub fn Def_SET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, c
 }
 
 /// Convenience function for generating HPy get-set descriptor. Replaces the "HPyDef_GETSET" macro.
-pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime get_impl: anytype, comptime set_impl: anytype) hpy.HPyDef {
+pub fn GetSet(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime get_impl: anytype, comptime set_impl: anytype) hpy.HPyDef {
     const S1 = Func_TRAMPOLINE(mod_ctx, get_impl, hpy.HPyFunc_GETTER);
     const S2 = Func_TRAMPOLINE(mod_ctx, set_impl, hpy.HPyFunc_SETTER);
 
@@ -190,10 +196,10 @@ pub fn Def_GETSET(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8
 }
 
 /// Convenience function for generating an HPyCallFunction definition. Replaces the "HPyDef_CALL_FUNCTION" macro
-pub fn Def_CALL_FUNCTION(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyCallFunction {
+pub fn CallFunction(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []const u8, comptime impl: anytype) hpy.HPyCallFunction {
     _ = name;
     var S = Func_TRAMPOLINE(mod_ctx, impl, hpy.HPyFunc_KEYWORDS);
-    var call_function_definition = hpy.HPyCallFunction{
+    const call_function_definition = hpy.HPyCallFunction{
         .cpy_trampoline = @as(hpy.cpy_vectorcallfunc, @ptrCast(@alignCast(&S.trampoline))),
         .impl = @as(hpy.HPyFunc_keywords, @ptrCast(@alignCast(&impl))),
     };
@@ -203,6 +209,354 @@ pub fn Def_CALL_FUNCTION(comptime mod_ctx: *?*hpy.HPyContext, comptime name: []c
 /// Emit a CPython-compatible trampoline which calls IMPL, where IMPL has the signature SIG.
 /// Replaces the HPy macro "HPyFunc_TRAMPOLINE".
 pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
+    if (cpython_abi) {
+        return cpython_trampoline(impl, sig);
+    } else {
+        return hpy_trampoline(mod_ctx, impl, sig);
+    }
+}
+
+inline fn cpython_trampoline(comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
+    var S = struct {};
+    switch (sig) {
+        hpy.HPyFunc_NOARGS => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_NOARGS = @as(hpy._HPyCFunction_NOARGS, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self)));
+                }
+            };
+        },
+        hpy.HPyFunc_VARARGS => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: *const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_VARARGS = @as(hpy._HPyCFunction_VARARGS, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._arr_py2h(args), @as(usize, @bitCast(nargs))));
+                }
+            };
+        },
+        hpy.HPyFunc_KEYWORDS => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: *const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_KEYWORDS = @as(hpy._HPyCFunction_KEYWORDS, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._arr_py2h(args), @as(usize, @bitCast(hpy.PyVectorcall_NARGS(nargs))), hpy._py2h(kwnames)));
+                }
+            };
+        },
+        hpy.HPyFunc_O => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, arg: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_O = @as(hpy._HPyCFunction_O, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._py2h(arg)));
+                }
+            };
+        },
+        hpy.HPyFunc_DESTROYFUNC => {
+            S = struct {
+                pub fn trampoline() callconv(.C) noreturn {
+                    abort();
+                }
+            };
+        },
+        hpy.HPyFunc_GETBUFFERPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.PyObject, arg1: ?*hpy.Py_buffer, arg2: c_int) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_GETBUFFERPROC = @as(hpy._HPyCFunction_GETBUFFERPROC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), @as(?*hpy.HPy_buffer, @ptrCast(@alignCast(arg1))), arg2);
+                }
+            };
+        },
+        hpy.HPyFunc_RELEASEBUFFERPROC => {
+            S = struct {
+                pub fn say_hello_RELEASEBUFFERPROC(arg0: ?*hpy.PyObject, arg1: ?*hpy.Py_buffer) callconv(.C) void {
+                    const func: hpy._HPyCFunction_RELEASEBUFFERPROC = @as(hpy._HPyCFunction_RELEASEBUFFERPROC, @ptrCast(@alignCast(&impl)));
+                    _ = func.?(hpy._HPyGetContext(), hpy._py2h(arg0), @as(?*hpy.HPy_buffer, @ptrCast(@alignCast(arg1))));
+                    return;
+                }
+            };
+        },
+        hpy.HPyFunc_UNARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_UNARYFUNC = @as(hpy._HPyCFunction_UNARYFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0)));
+                }
+            };
+        },
+        hpy.HPyFunc_BINARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_BINARYFUNC = @as(hpy._HPyCFunction_BINARYFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1)));
+                }
+            };
+        },
+        hpy.HPyFunc_TERNARYFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_TERNARYFUNC = @as(hpy._HPyCFunction_TERNARYFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), hpy._py2h(arg2)));
+                }
+            };
+        },
+        hpy.HPyFunc_INQUIRY => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_INQUIRY = @as(hpy._HPyCFunction_INQUIRY, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0));
+                }
+            };
+        },
+        hpy.HPyFunc_LENFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) hpy.HPy_ssize_t {
+                    const func: hpy._HPyCFunction_LENFUNC = @as(hpy._HPyCFunction_LENFUNC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0));
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZEARGFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_SSIZEARGFUNC = @as(hpy._HPyCFunction_SSIZEARGFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1));
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZESSIZEARGFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_SSIZESSIZEARGFUNC = @as(hpy._HPyCFunction_SSIZESSIZEARGFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1, arg2));
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZEOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_SSIZEOBJARGPROC = @as(hpy._HPyCFunction_SSIZEOBJARGPROC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1, hpy._py2h(arg2));
+                }
+            };
+        },
+        hpy.HPyFunc_SSIZESSIZEOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: hpy.HPy_ssize_t, arg2: hpy.HPy_ssize_t, arg3: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_SSIZESSIZEOBJARGPROC = @as(hpy._HPyCFunction_SSIZESSIZEOBJARGPROC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1, arg2, hpy._py2h(arg3));
+                }
+            };
+        },
+        hpy.HPyFunc_OBJOBJARGPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_OBJOBJARGPROC = @as(hpy._HPyCFunction_OBJOBJARGPROC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), hpy._py2h(arg2));
+                }
+            };
+        },
+        hpy.HPyFunc_FREEFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*anyopaque) callconv(.C) void {
+                    const func: hpy._HPyCFunction_FREEFUNC = @as(hpy._HPyCFunction_FREEFUNC, @ptrCast(@alignCast(&impl)));
+                    func.?(hpy._HPyGetContext(), arg0);
+                    return;
+                }
+            };
+        },
+        hpy.HPyFunc_GETATTRFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*:0]u8) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_GETATTRFUNC = @as(hpy._HPyCFunction_GETATTRFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1));
+                }
+            };
+        },
+        hpy.HPyFunc_GETATTROFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_GETATTROFUNC = @as(hpy._HPyCFunction_GETATTROFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1)));
+                }
+            };
+        },
+        hpy.HPyFunc_SETATTRFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*:0]u8, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_SETATTRFUNC = @as(hpy._HPyCFunction_SETATTRFUNC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1, hpy._py2h(arg2));
+                }
+            };
+        },
+        hpy.HPyFunc_SETATTROFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_SETATTROFUNC = @as(hpy._HPyCFunction_SETATTROFUNC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), hpy._py2h(arg2));
+                }
+            };
+        },
+        hpy.HPyFunc_REPRFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_REPRFUNC = @as(hpy._HPyCFunction_REPRFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0)));
+                }
+            };
+        },
+        hpy.HPyFunc_HASHFUNC => {
+            S = struct {
+                pub fn HASHFUNC_trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) hpy.HPy_hash_t {
+                    const func: hpy._HPyCFunction_HASHFUNC = @as(hpy._HPyCFunction_HASHFUNC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0));
+                }
+            };
+        },
+        hpy.HPyFunc_RICHCMPFUNC => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, obj: ?*hpy.cpy_PyObject, op: hpy.HPy_RichCompOp) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_RICHCMPFUNC = @as(hpy._HPyCFunction_RICHCMPFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._py2h(obj), op));
+                }
+            };
+        },
+        hpy.HPyFunc_GETITERFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_GETITERFUNC = @as(hpy._HPyCFunction_GETITERFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0)));
+                }
+            };
+        },
+        hpy.HPyFunc_ITERNEXTFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_ITERNEXTFUNC = @as(hpy._HPyCFunction_ITERNEXTFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0)));
+                }
+            };
+        },
+        hpy.HPyFunc_DESCRGETFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_DESCRGETFUNC = @as(hpy._HPyCFunction_DESCRGETFUNC, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), hpy._py2h(arg2)));
+                }
+            };
+        },
+        hpy.HPyFunc_DESCRSETFUNC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_DESCRSETFUNC = @as(hpy._HPyCFunction_DESCRSETFUNC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), hpy._py2h(arg2));
+                }
+            };
+        },
+        // FIXME
+        //hpy.HPyFunc_INITPROC => {
+        //    S = struct {
+        //        pub fn trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+        //            var items: *const ?*hpy.PyObject = &(blk: {
+        //                _ = blk_1: {
+        //                    _ = @sizeOf(c_int);
+        //                    break :blk_1 blk_2: {
+        //                        break :blk_2 if (hpy.PyType_HasFeature(hpy.Py_TYPE(args), @as(c_ulong, 1) << @intCast(26)) != 0) {} else {
+        //                            __assert_fail("PyTuple_Check(args)", "c_files/trampolines.c", @as(c_uint, @bitCast(@as(c_int, 38))), "int say_hello_INITPROC(PyObject *, PyObject *, PyObject *)");
+        //                        };
+        //                    };
+        //                };
+        //                break :blk @as(?*hpy.PyTupleObject, @ptrCast(@alignCast(args)));
+        //            }).*.ob_item[@as(c_uint, @intCast(@as(c_int, 0)))];
+        //            var nargs: hpy.Py_ssize_t = hpy.PyTuple_GET_SIZE(args);
+        //            var func: hpy._HPyCFunction_INITPROC = @as(hpy._HPyCFunction_INITPROC, @ptrCast(@alignCast(&impl)));
+        //            return func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._arr_py2h(items), nargs, hpy._py2h(kw));
+        //        }
+        //    };
+        //},
+        //hpy.HPyFunc_NEWFUNC => {
+        //    S = struct {
+        //        pub fn trampoline(self: ?*hpy.cpy_PyObject, args: ?*hpy.cpy_PyObject, kw: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+        //            var items: *const ?*hpy.PyObject = &(blk: {
+        //                _ = blk_1: {
+        //                    _ = @sizeOf(c_int);
+        //                    break :blk_1 blk_2: {
+        //                        break :blk_2 if (hpy.PyType_HasFeature(hpy.Py_TYPE(args), @as(c_ulong, 1) << @intCast(26)) != 0) {} else {
+        //                            __assert_fail("PyTuple_Check(args)", "c_files/trampolines.c", @as(c_uint, @bitCast(@as(c_int, 39))), "PyObject *say_hello_NEWFUNC(PyObject *, PyObject *, PyObject *)");
+        //                        };
+        //                    };
+        //                };
+        //                break :blk @as(?*hpy.PyTupleObject, @ptrCast(@alignCast(args)));
+        //            }).*.ob_item[@as(c_uint, @intCast(@as(c_int, 0)))];
+        //            var nargs: hpy.Py_ssize_t = hpy.PyTuple_GET_SIZE(args);
+        //            var func: hpy._HPyCFunction_NEWFUNC = @as(hpy._HPyCFunction_NEWFUNC, @ptrCast(@alignCast(&impl)));
+        //            return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(self), hpy._arr_py2h(items), nargs, hpy._py2h(kw)));
+        //        }
+        //    };
+        //},
+        hpy.HPyFunc_GETTER => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*anyopaque) callconv(.C) ?*hpy.cpy_PyObject {
+                    const func: hpy._HPyCFunction_GETTER = @as(hpy._HPyCFunction_GETTER, @ptrCast(@alignCast(&impl)));
+                    return hpy._h2py(func.?(hpy._HPyGetContext(), hpy._py2h(arg0), arg1));
+                }
+            };
+        },
+        hpy.HPyFunc_SETTER => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject, arg2: ?*anyopaque) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_SETTER = @as(hpy._HPyCFunction_SETTER, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1), arg2);
+                }
+            };
+        },
+        hpy.HPyFunc_OBJOBJPROC => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                    const func: hpy._HPyCFunction_OBJOBJPROC = @as(hpy._HPyCFunction_OBJOBJPROC, @ptrCast(@alignCast(&impl)));
+                    return func.?(hpy._HPyGetContext(), hpy._py2h(arg0), hpy._py2h(arg1));
+                }
+            };
+        },
+        hpy.HPyFunc_TRAVERSEPROC => {
+            S = struct {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, visit: hpy.cpy_visitproc, arg: ?*anyopaque) callconv(.C) c_int {
+                    return hpy.call_traverseproc_from_trampoline(@as(hpy.HPyFunc_traverseproc, @ptrCast(@alignCast(&impl))), self, visit, arg);
+                }
+            };
+        },
+        hpy.HPyFunc_DESTRUCTOR => {
+            S = struct {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject) callconv(.C) void {
+                    const func: hpy._HPyCFunction_DESTRUCTOR = @as(hpy._HPyCFunction_DESTRUCTOR, @ptrCast(@alignCast(&impl)));
+                    func.?(hpy._HPyGetContext(), hpy._py2h(arg0));
+                    return;
+                }
+            };
+        },
+        //hpy.HPyFunc_CAPSULE_DESTRUCTOR => {}, // FIXME
+        //hpy.HPyFunc_VECTORCALLFUNC => {}, // FIXME
+        hpy.HPyFunc_MOD_CREATE => {
+            S = struct {
+                pub fn trampoline(spec: ?*hpy.cpy_PyObject, def: ?*hpy.cpy_PyModuleDef) callconv(.C) ?*hpy.cpy_PyObject {
+                    _ = @TypeOf(def);
+                    var result: ?*hpy.cpy_PyObject = hpy._h2py(impl(hpy._HPyGetContext(), hpy._py2h(spec)));
+                    hpy._HPyModule_CheckCreateSlotResult(&result);
+                    return result;
+                }
+            };
+        },
+        else => {
+            const msg =
+                \\Helper function received an unsupported value for the 
+                \\'func_sig' parameter.
+            ;
+            @compileError(msg);
+        },
+    }
+    return S;
+}
+
+inline fn hpy_trampoline(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anytype, comptime sig: hpy.HPyFunc_Signature) type {
     var S = struct {};
     switch (sig) {
         hpy.HPyFunc_NOARGS => {
@@ -219,7 +573,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         hpy.HPyFunc_VARARGS => {
             S = struct {
-                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: *const ?*hpy.cpy_PyObject, nargs: hpy.HPy_ssize_t) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_VARARGS{
                         .self = self,
                         .args = args,
@@ -233,7 +587,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         hpy.HPyFunc_KEYWORDS => {
             S = struct {
-                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: [*c]const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(self: ?*hpy.cpy_PyObject, args: *const ?*hpy.cpy_PyObject, nargs: usize, kwnames: ?*hpy.cpy_PyObject) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_KEYWORDS{
                         .self = self,
                         .args = args,
@@ -438,7 +792,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         hpy.HPyFunc_GETATTRFUNC => {
             S = struct {
-                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*c]u8) callconv(.C) ?*hpy.cpy_PyObject {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*:0]u8) callconv(.C) ?*hpy.cpy_PyObject {
                     var a = hpy._HPyFunc_args_GETATTRFUNC{
                         .arg0 = arg0,
                         .arg1 = arg1,
@@ -464,7 +818,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         hpy.HPyFunc_SETATTRFUNC => {
             S = struct {
-                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*c]u8, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
+                pub fn trampoline(arg0: ?*hpy.cpy_PyObject, arg1: [*:0]u8, arg2: ?*hpy.cpy_PyObject) callconv(.C) c_int {
                     var a = hpy._HPyFunc_args_SETATTRFUNC{
                         .arg0 = arg0,
                         .arg1 = arg1,
@@ -680,7 +1034,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
                 }
             };
         },
-        //hpy.HPyFunc_VECTORCALLFUNC, // Not used, not supported
+        //hpy.HPyFunc_VECTORCALLFUNC, // FIXME
         hpy.HPyFunc_MOD_CREATE => {
             S = struct {
                 pub fn trampoline(spec: ?*hpy.cpy_PyObject, def: ?*hpy.cpy_PyModuleDef) callconv(.C) ?*hpy.cpy_PyObject {
@@ -696,7 +1050,7 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
         },
         else => {
             const msg =
-                \\Helper function Def_METH received an unsupported value for the 
+                \\Helper function received an unsupported value for the 
                 \\'func_sig' parameter.
             ;
             @compileError(msg);
@@ -707,65 +1061,24 @@ pub fn Func_TRAMPOLINE(comptime mod_ctx: *?*hpy.HPyContext, comptime impl: anyty
 
 /// A convenience function for creating a helper function for the supplied type.
 /// Replaces the "HPyType_HELPERS" macro.
-pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_BuiltinShape) fn (ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*custom_type {
-    _ = shape;
-
+pub fn Type_HELPERS(comptime custom_type: type, comptime shape: hpy.HPyType_BuiltinShape) type {
     // TODO: Add check that custom_type is an extern struct.
 
     const S = struct {
+        pub const SHAPE = @as(hpy.HPyType_BuiltinShape, @bitCast(shape));
         pub fn objectHelper(ctx: ?*hpy.HPyContext, h: hpy.HPy) callconv(.C) ?*custom_type {
-            return @as([*c]custom_type, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
+            return @as(?*custom_type, @ptrCast(@alignCast(hpy._HPy_AsStruct_Object(ctx, h))));
         }
     };
-    return S.objectHelper;
+    return S;
 }
 
 /// A convenience type for creating a module definition in zig, rather than interop with the
 /// C definition, HPyModuleDef.
-pub const ModuleDef = extern struct {
-    doc: [*]const u8 = "",
+pub const Module = extern struct {
+    doc: [*:0]const u8 = "",
     size: hpy.HPy_ssize_t = 0,
     legacy_methods: ?*hpy.cpy_PyMethodDef = null,
     defines: [*:null]?*hpy.HPyDef,
     globals: ?[*:null]?*hpy.HPyGlobal = null,
 };
-
-/// Exports functions required by the HPy ABI. Replaces the "HPy_MODINIT" macro.
-pub inline fn MODINIT(comptime mod_ctx: *?*hpy.HPyContext, comptime mod_name: []const u8, comptime module_def: ?*ModuleDef) void {
-
-    // Exports the functions used by HPy for getting the ABI version
-    const major_version_modname = "get_required_hpy_major_version_" ++ mod_name;
-    @export(get_required_hpy_major_version_module, .{ .name = major_version_modname, .linkage = .Strong });
-    const minor_version_modname = "get_required_hpy_minor_version_" ++ mod_name;
-    @export(get_required_hpy_minor_version_module, .{ .name = minor_version_modname, .linkage = .Strong });
-
-    // Exports the function used by HPy to get the module definition. Required by the HPy ABI.
-    const S1 = struct {
-        const _module_def = @as(*hpy.HPyModuleDef, @ptrCast(@constCast(module_def)));
-        pub fn Init_module() callconv(.C) ?*hpy.HPyModuleDef {
-            return _module_def;
-        }
-    };
-    const init_modname = "HPyInit_" ++ mod_name;
-    @export(S1.Init_module, .{ .name = init_modname, .linkage = .Strong });
-
-    // Exports the function used by HPy to pass a context to by used by functions. Required by the HPy ABI.
-    const S2 = struct {
-        //pub var _ctx_for_trampolines: ?*hpy.HPyContext = null;
-        pub fn InitGlobalContext_module(ctx: ?*hpy.HPyContext) callconv(.C) void {
-            mod_ctx.* = ctx;
-        }
-    };
-    const hpyinitcontext_name = "HPyInitGlobalContext_" ++ mod_name;
-    @export(S2.InitGlobalContext_module, .{ .name = hpyinitcontext_name, .linkage = .Strong });
-}
-
-/// The HPy major version that this code was compiled with. Required by the HPy ABI.
-fn get_required_hpy_major_version_module() callconv(.C) u32 {
-    return hpy.HPY_ABI_VERSION;
-}
-
-/// The HPy minor version that this code was compiled with. Required by the HPy ABI.
-fn get_required_hpy_minor_version_module() callconv(.C) u32 {
-    return hpy.HPY_ABI_VERSION_MINOR;
-}

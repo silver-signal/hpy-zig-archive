@@ -16,14 +16,15 @@ from typing import Optional
 from importlib_resources import files, as_file
 import hpy.devel.include
 
-def build(
+def translate(
         zig_file_name: str, 
-        source: str | Path, 
+        source: str | Path,
+        output_dir: str | Path,
         define_macros: Optional[list[str]]=None,
         include_dirs: Optional[list[str | Path]]=None,
         cflags: Optional[list[str]]=None, 
         libraries: Optional[list[str]]=None, 
-        py_limited_api: bool=False,):
+        ):
 
     pyinclude = Path(get_path("include"))
     python_header_dirs = [str(p) for p in pyinclude.iterdir() if p.is_dir()]
@@ -37,8 +38,6 @@ def build(
     logging.debug(f"{include_paths=}")
     
     defines = ["PY_SSIZE_T_CLEAN"]
-    if py_limited_api:
-        defines.append("Py_LIMITED_API=0x030900f0")
     if define_macros is not None:
         defines.extend(define_macros)
     defines = [f"-D{define}" for define in defines]
@@ -69,7 +68,12 @@ def build(
     arg_list.extend(source_file)
     arg_list.extend(libs)
 
-    with open(f"{zig_file_name}.zig", "w") as zig_file:
+    if type(output_dir) is str:
+        output_dir = Path(output_dir)
+
+    output_file = output_dir / zig_file_name
+
+    with open(f"{output_file}.zig", "w") as zig_file:
         subprocess.call(arg_list, stdout=zig_file)
 
 
@@ -77,23 +81,25 @@ def build(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
-    hpy_define_macros = ["HPY", "HPY_ABI_UNIVERSAL"]
+    hpy_define_macros = [["HPY", "HPY_ABI_UNIVERSAL"], ["HPY", "HPY_ABI_HYBRID"], ["HPY", "HPY_ABI_CPYTHON"]]
     
     hpy_devel = files(hpy.devel.include)
     with as_file(hpy_devel) as hpy:
         hpy_header = hpy / 'hpy.h'
-        build(zig_file_name='hpy_universal', source=hpy_header, 
-                define_macros=hpy_define_macros, include_dirs=[hpy],
-                py_limited_api=True)
-
-        cwd = Path(".")
-        c_file_list = []
-        c_file_list.extend(list(cwd.rglob('*.h')))
-        c_file_list.extend(list(cwd.rglob('*.c')))
+        c_files_dir = Path("./c_files")
+        c_file_list = [hpy_header]
+        c_file_list.extend(list(c_files_dir.rglob('*.h')))
+        c_file_list.extend(list(c_files_dir.rglob('*.c')))
         for file in c_file_list:
-            build(zig_file_name=file.stem, source=file, 
-                    define_macros=hpy_define_macros, include_dirs=[hpy],
-                    py_limited_api=True)
+            for hpy_define in hpy_define_macros:
+                zig_file_name = file.stem
+                if hpy_define[1] == "HPY_ABI_UNIVERSAL":
+                    zig_file_name = file.stem + "_universal"
+                elif hpy_define[1] == "HPY_ABI_HYBRID":
+                    zig_file_name = file.stem + "_hybrid"
+                elif hpy_define[1] == "HPY_ABI_CPYTHON":
+                    zig_file_name = file.stem + "_cpython"
 
-
-
+                translate(zig_file_name=zig_file_name, source=file, output_dir="./ctranslate_files/",
+                        define_macros=hpy_define, include_dirs=[hpy],
+                    )
